@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id              Int                 @id @default(autoincrement())
+  first_name           String?
+  last_name            String?
+  email                String              @unique
+  password             String?
+  user_type            String?
+  registration_date    DateTime            @default(now())
+
+  plants               Plant[]
+  favorites            Favorite[]
+  chatbot_questions    ChatbotQuestion[]
+  visit_statistics     VisitStatistic[]
+  admin_actions        AdminAction[]       @relation("AdminActions")
+}
+
+model Plant {
+  plant_id             Int                 @id @default(autoincrement())
+  plant_name           String?
+  description          String?
+  type                 String?
+  light_requirement    String?
+  watering_frequency   String?
+  temperature_min      Float?
+  temperature_max      Float?
+  photo_url            String?
+
+  userId               Int?
+  user                 User?               @relation(fields: [userId], references: [user_id])
+
+  favorites            Favorite[]
+  visit_statistics     VisitStatistic[]
+}
+
+model Favorite {
+  user_id              Int
+  plant_id             Int
+  created_at           DateTime            @default(now())
+
+  user                 User                @relation(fields: [user_id], references: [user_id])
+  plant                Plant               @relation(fields: [plant_id], references: [plant_id])
+
+  @@id([user_id, plant_id])
+}
+
+model ChatbotQuestion {
+  question_id          Int                 @id @default(autoincrement())
+  user_id              Int?
+  question_text        String?
+  answer_text          String?
+  question_date        DateTime            @default(now())
+  used_in_faq          Boolean?
+
+  user                 User?               @relation(fields: [user_id], references: [user_id])
+}
+
+model FAQ {
+  faq_id               Int                 @id @default(autoincrement())
+  question             String?
+  answer               String?
+  topic                String?
+  source               String?
+  created_at           DateTime            @default(now())
+}
+
+model VisitStatistic {
+  visit_id             Int                 @id @default(autoincrement())
+  user_id              Int?
+  plant_id             Int?
+  visit_date           DateTime            @default(now())
+  consultation_duration Int?
+
+  user                 User?               @relation(fields: [user_id], references: [user_id])
+  plant                Plant?              @relation(fields: [plant_id], references: [plant_id])
+}
+
+model AdminAction {
+  action_id            Int                 @id @default(autoincrement())
+  admin_id             Int?
+  action_type          String?
+  target_id            Int?
+  action_date          DateTime            @default(now())
+
+  admin                User?               @relation("AdminActions", fields: [admin_id], references: [user_id])
+}
