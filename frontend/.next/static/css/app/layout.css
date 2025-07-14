@@ -74,12 +74,14 @@
 @layer theme, base, components, utilities;
 @layer theme {
   :root, :host {
+    --color-red-600: oklch(57.7% 0.245 27.325);
     --color-gray-600: oklch(44.6% 0.03 256.802);
     --color-gray-900: oklch(21% 0.034 264.665);
     --color-white: #fff;
     --spacing: 0.25rem;
     --container-xs: 20rem;
     --container-sm: 24rem;
+    --container-lg: 32rem;
     --text-sm: 0.875rem;
     --text-sm--line-height: calc(1.25 / 0.875);
     --text-base: 1rem;
@@ -265,8 +267,20 @@
   .row-start-1 {
     grid-row-start: 1;
   }
+  .mx-auto {
+    margin-inline: auto;
+  }
   .mt-2 {
     margin-top: calc(var(--spacing) * 2);
+  }
+  .mt-6 {
+    margin-top: calc(var(--spacing) * 6);
+  }
+  .mt-8 {
+    margin-top: calc(var(--spacing) * 8);
+  }
+  .mt-10 {
+    margin-top: calc(var(--spacing) * 10);
   }
   .mb-6 {
     margin-bottom: calc(var(--spacing) * 6);
@@ -299,8 +313,8 @@
   .h-10 {
     height: calc(var(--spacing) * 10);
   }
-  .h-48 {
-    height: calc(var(--spacing) * 48);
+  .h-110 {
+    height: calc(var(--spacing) * 110);
   }
   .h-full {
     height: 100%;
@@ -311,11 +325,14 @@
   .min-h-svh {
     min-height: 100svh;
   }
-  .w-48 {
-    width: calc(var(--spacing) * 48);
+  .w-200 {
+    width: calc(var(--spacing) * 200);
   }
   .w-full {
     width: 100%;
+  }
+  .max-w-lg {
+    max-width: var(--container-lg);
   }
   .max-w-sm {
     max-width: var(--container-sm);
@@ -350,6 +367,9 @@
   .justify-center {
     justify-content: center;
   }
+  .justify-end {
+    justify-content: flex-end;
+  }
   .gap-1\.5 {
     gap: calc(var(--spacing) * 1.5);
   }
@@ -380,6 +400,9 @@
   .border {
     border-style: var(--tw-border-style);
     border-width: 1px;
+  }
+  .border-\[\#0d7d4b\] {
+    border-color: #0d7d4b;
   }
   .border-input {
     border-color: var(--input);
@@ -438,6 +461,9 @@
   .py-6 {
     padding-block: calc(var(--spacing) * 6);
   }
+  .py-8 {
+    padding-block: calc(var(--spacing) * 8);
+  }
   .text-center {
     text-align: center;
   }
@@ -479,6 +505,9 @@
   .whitespace-nowrap {
     white-space: nowrap;
   }
+  .\!text-\[\#0d7d4b\] {
+    color: #0d7d4b !important;
+  }
   .\!text-white {
     color: var(--color-white) !important;
   }
@@ -502,6 +531,9 @@
   }
   .text-primary-foreground {
     color: var(--primary-foreground);
+  }
+  .text-red-600 {
+    color: var(--color-red-600);
   }
   .text-secondary-foreground {
     color: var(--secondary-foreground);
@@ -669,6 +701,13 @@
         @supports (color: color-mix(in lab, red, red)) {
           background-color: color-mix(in oklab, var(--secondary) 80%, transparent);
         }
+      }
+    }
+  }
+  .hover\:\!text-white {
+    &:hover {
+      @media (hover: hover) {
+        color: var(--color-white) !important;
       }
     }
   }

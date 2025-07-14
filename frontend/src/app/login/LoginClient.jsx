@@ -28,9 +28,8 @@ export default function LoginClient() {
     .then((res) => res.json())
     .then((data) => {
       if(data.token){
-        alert("login Done");
             localStorage.setItem("token", data.token); 
-        router.push('/');
+        router.push('/profile');
       } else {
         alert(data.error);
       }
