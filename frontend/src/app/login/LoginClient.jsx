@@ -1,12 +1,13 @@
-// src/app/login/LoginClient.jsx
 'use client'
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { LoginForm } from "@/components/login-form"
 
 export default function LoginClient() {
   const router = useRouter();
+  const [error, setError] = useState("");
 
   function handleLoginSubmit(event){
     event.preventDefault();
@@ -16,25 +17,26 @@ export default function LoginClient() {
     const password = form.password.value;
 
     if(!email || !password ){
-      alert("Veuillez remplir tous les champs");
+      setError("Veuillez remplir tous les champs.");
       return;
     }
 
     fetch("http://localhost:8080/api/login", {
       method:"POST",
       headers: { "Content-Type":"application/json" },
-      body: JSON.stringify({ email,password })
+      body: JSON.stringify({ email, password })
     })
     .then((res) => res.json())
     .then((data) => {
       if(data.token){
-            localStorage.setItem("token", data.token); 
+        localStorage.setItem("token", data.token); 
+        setError("");
         router.push('/profile');
       } else {
-        alert(data.error);
+        setError(data.error || "Identifiants incorrects");
       }
     })
-    .catch(() => alert("error server"));
+    .catch(() => setError("Erreur du serveur"));
   }
 
   return (
@@ -42,7 +44,7 @@ export default function LoginClient() {
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
-            <LoginForm onSubmit={handleLoginSubmit}/>
+            <LoginForm onSubmit={handleLoginSubmit} error={error} />
           </div>
         </div>
       </div>
