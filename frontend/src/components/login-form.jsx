@@ -35,7 +35,7 @@ export function LoginForm({ className, error, ...props }) {
           />
           {/* Message d'erreur sous le champ mot de passe */}
           {error && (
-            <div className="flex items-center gap-2 text-red-600 text-sm">
+            <div className="flex items-center gap-2 text-red-600 text-sm font-semibold">
               <AlertCircle className="h-4 w-4" />
               <span>{error}</span>
             </div>
