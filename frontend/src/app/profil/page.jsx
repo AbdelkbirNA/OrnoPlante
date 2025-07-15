@@ -22,31 +22,46 @@ export default function ProfilePage() {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState(null);
+const [token, setToken] = useState(null);
 
   // Récupère le token stocké (adapter selon ta gestion du token)
-  const token = localStorage.getItem("token");
+  useEffect(() => {
+  const storedToken = localStorage.getItem("token");
+  if (storedToken) {
+    setToken(storedToken);
+  } else {
+    setError("Vous n'êtes pas connecté.");
+    setLoading(false);
+  }
+}, []);
 
   useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const res = await fetch("http://localhost:8080/api/profil", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!res.ok) throw new Error("Erreur lors de la récupération du profil");
-        const data = await res.json();
-        setUserData(data);
-        setEditData(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+  if (!token) return;
+
+  async function fetchProfile() {
+    try {
+      const res = await fetch("http://localhost:8080/api/profil", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Erreur lors de la récupération du profil");
+
+      const data = await res.json();
+      setUserData(data);
+      setEditData(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-    fetchProfile();
-  }, [token]);
+  }
+
+  fetchProfile();
+}, [token]);
+
 
   const handleEdit = () => setIsEditing(true);
   const handleCancel = () => {
@@ -58,9 +73,22 @@ export default function ProfilePage() {
     setEditData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    // Appelle ici ton API PUT ou PATCH pour sauvegarder
-    setUserData(editData);
+  const handleSave = async() => {
+    const response = await fetch("http://localhost:8080/api/user/update", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, 
+      },
+      body: JSON.stringify(editData),
+    });
+    if (!response.ok) {
+      throw new Error("Erreur lors de la sauvegarde");
+    }
+     const updatedUser = await response.json();
+    
+
+    setUserData(updatedUser);
     setIsEditing(false);
     console.log("Sauvegardé:", editData);
   };
@@ -236,12 +264,7 @@ export default function ProfilePage() {
                           {userData.user_type || "utilisateur"}
                         </p>
                       </div>
-                      <div>
-                        <Label className="text-sm font-medium text-gray-500">
-                          ID Utilisateur
-                        </Label>
-                        <p className="mt-1 text-lg">#{userData.user_id}</p>
-                      </div>
+                    
                     </div>
                   </div>
                 )}

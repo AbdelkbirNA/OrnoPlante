@@ -55,7 +55,7 @@ export default function UserProfile() {
       <p><strong>ID :</strong> {user.user_id}</p>
       <p><strong>Email :</strong> {user.email}</p>
       <p><strong>Inscription :</strong> {new Date(user.registration_date).toLocaleDateString()}</p>
-      <Button onClick={logout}>hi</Button>
+      <Button onClick={logout}>logout</Button>
     </div>
   );
 }

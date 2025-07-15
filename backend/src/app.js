@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const authRoutes = require("./routes/authRoutes"); 
 const profilRoute = require("./routes/profilRoute"); 
+const updatroute = require("./routes/updateRoutes"); 
 const path = require("path");
 
 
@@ -19,5 +20,6 @@ app.get("/", (req, res) => {
 
 app.use("/api", authRoutes); 
 app.use("/api/",profilRoute);
+app.use("/api/",updatroute);
 
 module.exports = app;
