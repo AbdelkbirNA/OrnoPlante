@@ -6,6 +6,7 @@ CREATE TABLE `User` (
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NULL,
     `user_type` VARCHAR(191) NULL,
+    `profile_picture` VARCHAR(191) NULL,
     `registration_date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `User_email_key`(`email`),

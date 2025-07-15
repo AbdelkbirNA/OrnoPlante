@@ -20,18 +20,25 @@ export default function LoginClient() {
       setError("Veuillez remplir tous les champs.");
       return;
     }
+      const token = localStorage.getItem("token");
+
 
     fetch("http://localhost:8080/api/login", {
       method:"POST",
-      headers: { "Content-Type":"application/json" },
+      headers: { "Content-Type":"application/json" ,
+    ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+    },
       body: JSON.stringify({ email, password })
     })
     .then((res) => res.json())
     .then((data) => {
+      if(data.message=="Vous êtes déjà connecté."){
+      router.push('/profil');
+      }
       if(data.token){
         localStorage.setItem("token", data.token); 
         setError("");
-        router.push('/profile');
+        router.push('/profil');
       } else {
         setError(data.error || "Identifiants incorrects");
       }

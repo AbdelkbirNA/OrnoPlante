@@ -100,8 +100,15 @@ console.log(req.user)
   }
 }
 
+function logout(req, res) {
+  res.json({ message: "Déconnexion réussie" });
+}
+
+
+
 module.exports = {
   register,
   login,
-    getMe
+  getMe,
+  logout
 };
