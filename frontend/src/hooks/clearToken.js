@@ -9,7 +9,7 @@ export function useLogout() {
 
   function logout() {
     clearToken();
-    router.push("/login");
+    router.push("/");
   }
 
   return logout;

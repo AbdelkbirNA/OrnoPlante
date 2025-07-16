@@ -180,7 +180,9 @@ export default function ProfilePage() {
                 <AvatarImage
                   src={profilePicturePreviewUrl?.startsWith("blob:")
                     ? profilePicturePreviewUrl
-                      : `http://localhost:8080${profilePicturePreviewUrl}` }/>
+                      : `http://localhost:8080${profilePicturePreviewUrl}` }
+                        
+                      />
                 <AvatarFallback className="text-xl">
                   {userData.first_name?.[0]}
                   {userData.last_name?.[0]}
