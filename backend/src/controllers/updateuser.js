@@ -6,6 +6,11 @@ const prisma = new PrismaClient();
 async function updatedUser(req,res) {
     const userId=req.user.userId;
     const { first_name, last_name, email, profile_picture } = req.body;
+
+    let profilePicturePath = null;
+  if (req.file) {
+    profilePicturePath = `/uploads/users/${req.file.filename}`;
+  }
     
 
 if (!userId){
@@ -18,7 +23,7 @@ try{
         first_name,
         last_name,
         email,
-        profile_picture,
+        ...(profilePicturePath && { profile_picture: profilePicturePath }),
       },
       select: {
         user_id: true,

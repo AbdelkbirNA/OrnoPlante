@@ -2,12 +2,19 @@
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 import { LoginForm } from "@/components/login-form"
 
 export default function LoginClient() {
   const router = useRouter();
   const [error, setError] = useState("");
+
+   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/profil");
+    }
+  }, []);
 
   function handleLoginSubmit(event){
     event.preventDefault();
@@ -34,6 +41,7 @@ export default function LoginClient() {
     .then((data) => {
       if(data.message=="Vous êtes déjà connecté."){
       router.push('/profil');
+      return;
       }
       if(data.token){
         localStorage.setItem("token", data.token); 
