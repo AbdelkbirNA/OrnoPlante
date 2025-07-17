@@ -9,12 +9,7 @@ export default function LoginClient() {
   const router = useRouter();
   const [error, setError] = useState("");
 
-   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      router.push("/profil");
-    }
-  }, []);
+ 
 
   function handleLoginSubmit(event){
     event.preventDefault();
