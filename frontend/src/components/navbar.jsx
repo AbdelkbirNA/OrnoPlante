@@ -115,8 +115,8 @@ const navigationItems = [
     description: "En savoir plus sur notre projet",
   },
   {
-    name: "Découvrir",
-    href: "/discover",
+    name: "Plantes",
+    href: "/plants",
     icon: Leaf,
     description: "Liste ou galerie de plantes",
   },
@@ -126,12 +126,7 @@ const navigationItems = [
     icon: MessageCircle,
     description: "Accès au chatbot",
   },
-  {
-    name: "FAQ intelligente",
-    href: "/faq",
-    icon: HelpCircle,
-    description: "Questions/réponses fréquentes",
-  },
+  
   {
     name: "Contact",
     href: "/contact",
