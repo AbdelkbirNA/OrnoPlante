@@ -1,4 +1,6 @@
 import Link from "next/link"
+import Image from "next/image"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
@@ -33,9 +35,14 @@ export default function Footer() {
       {/* Logo et description */}
       <div className="space-y-3">
         <Link href="/" className="flex items-center space-x-2">
-          <div className="flex items-center justify-center w-10 h-10 bg-green-600 rounded-xl shadow-md">
-            <Sprout className="h-6 w-6 text-white" />
-          </div>
+          <Image
+              src="/logo.png"
+              alt="OrnoPlante Logo"
+              width={32}
+              height={32}
+              style={{ objectFit: "contain" }}
+              priority
+            />
           <span className="text-2xl font-bold text-green-700">OrnoPlante</span>
         </Link>
         <p className="text-gray-600 text-sm leading-relaxed">
@@ -104,29 +111,22 @@ export default function Footer() {
           <span>Restez informé</span>
         </h3>
         <p className="text-gray-600 text-sm">Recevez nos dernières actualités et conseils pour vos plantes.</p>
-        <form onSubmit={""} className="space-y-2">
-          <div className="flex space-x-2">
-            <Input type="email" placeholder="Votre email" className="flex-1 border-green-200 focus:border-green-400" required />
-            <Button type="submit" size="icon" className="bg-green-600 hover:bg-green-700">
-              <Send className="h-4 w-4" />
-            </Button>
-          </div>
-        </form>
+        
 
         <div className="space-y-1 pt-2">
           <h4 className="font-medium text-gray-900">Contact</h4>
           <div className="text-sm text-gray-600 space-y-1">
             <div className="flex items-center space-x-2">
               <Mail className="h-3 w-3" />
-              <span>contact@ornoplante.com</span>
+              <span>Ornoplante@gmail.com</span>
             </div>
             <div className="flex items-center space-x-2">
               <Phone className="h-3 w-3" />
-              <span>+33 1 23 45 67 89</span>
+              <span>+212695432671</span>
             </div>
             <div className="flex items-center space-x-2">
               <MapPin className="h-3 w-3" />
-              <span>Paris, France</span>
+              <span>Chtouka,Maroc</span>
             </div>
           </div>
         </div>
@@ -155,11 +155,7 @@ export default function Footer() {
     {/* Copyright */}
     <div className="flex flex-col md:flex-row justify-between items-center pt-3 text-sm text-gray-600">
       <span>© {currentYear} OrnoPlante. Tous droits réservés.</span>
-      <div className="flex items-center space-x-1">
-        <span>Fait avec</span>
-        <Heart className="h-4 w-4 text-red-500 fill-current" />
-        <span>pour les amoureux des plantes</span>
-      </div>
+      
     </div>
   </div>
 </footer>

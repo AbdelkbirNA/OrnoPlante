@@ -1,5 +1,4 @@
 "use client"
-
 import Image from "next/image"
 import Link from "next/link"
 import { useState, useEffect } from "react"
@@ -14,7 +13,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Home, Leaf, MessageCircle, HelpCircle, Phone, User, LogIn, LogOut, Menu, Sprout, Settings } from "lucide-react"
+import {
+  Home,
+  Leaf,
+  MessageCircle,
+  HelpCircle,
+  Phone,
+  User,
+  LogIn,
+  LogOut,
+  Menu,
+  Sprout,
+  Settings,
+  Info,
+} from "lucide-react"
 
 // Hook auth centralisé
 function useAuth() {
@@ -38,7 +50,6 @@ function useAuth() {
       setUser(null)
       return
     }
-
     const fetchProfile = async () => {
       try {
         setLoading(true)
@@ -48,11 +59,9 @@ function useAuth() {
             Authorization: `Bearer ${token}`,
           },
         })
-
         if (!res.ok) {
           throw new Error("Impossible de récupérer le profil")
         }
-
         const data = await res.json()
         setUser(data)
         setError(null)
@@ -65,7 +74,6 @@ function useAuth() {
         setLoading(false)
       }
     }
-
     fetchProfile()
   }, [token])
 
@@ -100,6 +108,11 @@ const navigationItems = [
     href: "/",
     icon: Home,
     description: "Présentation du projet / plateforme",
+  },{
+    name: "À propos", // <-- Nouvel élément ajouté
+    href: "/about",
+    icon: Info, // <-- Changez cette ligne pour l'icône désirée
+    description: "En savoir plus sur notre projet",
   },
   {
     name: "Découvrir",
@@ -154,7 +167,6 @@ export default function Navbar() {
             {navigationItems.map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
-
               return (
                 <Link key={item.name} href={item.href}>
                   <Button
@@ -190,8 +202,7 @@ export default function Navbar() {
                   >
                     <div className="relative">
                       <Avatar className="h-8 w-8 ring-1 ring-white/30 shadow-md">
-                        <AvatarImage
-                          src={`http://localhost:8080${user.profile_picture}`} alt="Photo de profil" />
+                        <AvatarImage src={`http://localhost:8080${user.profile_picture}`} alt="Photo de profil" />
                       </Avatar>
                     </div>
                     <div className="flex flex-col w-20 items-start">
@@ -213,9 +224,7 @@ export default function Navbar() {
                   <div className="px-3 py-2 border-b border-gray-100">
                     <div className="flex items-center space-x-3">
                       <Avatar className="h-10 w-10">
-                        <AvatarImage
-                          src={`http://localhost:8080${user.profile_picture}`} alt="Photo de profil" />
-                        
+                        <AvatarImage src={`http://localhost:8080${user.profile_picture}`} alt="Photo de profil" />
                         <AvatarFallback className="bg-gradient-to-br from-green-500 to-green-600 text-white">
                           {(user.first_name ?? user.name ?? "U")?.charAt(0)?.toUpperCase()}
                         </AvatarFallback>
@@ -277,14 +286,12 @@ export default function Navbar() {
                     <span className="text-green-700">OrnoPlante</span>
                   </SheetTitle>
                 </SheetHeader>
-
                 <div className="mt-6 space-y-4">
                   {/* Navigation Mobile */}
                   <div className="space-y-2">
                     {navigationItems.map((item) => {
                       const Icon = item.icon
                       const isActive = pathname === item.href
-
                       return (
                         <Link key={item.name} href={item.href} onClick={() => setIsMobileMenuOpen(false)}>
                           <Button
@@ -319,7 +326,14 @@ export default function Navbar() {
                         <div className="flex items-center space-x-3 px-4 py-3 bg-white/70 backdrop-blur-sm border border-white/20 shadow-lg rounded-2xl">
                           <Avatar className="h-10 w-10 ring-1 ring-white/30 shadow-md">
                             <AvatarImage
-                              src={user.avatar || user.profile_picture || "/placeholder.svg?height=40&width=40"}
+                              src={
+                                user.avatar ||
+                                user.profile_picture ||
+                                "/placeholder.svg?height=40&width=40" ||
+                                "/placeholder.svg" ||
+                                "/placeholder.svg" ||
+                                "/placeholder.svg"
+                              }
                               alt={user.first_name ?? user.name ?? "Utilisateur"}
                             />
                             <AvatarFallback className="bg-gradient-to-br from-green-500 to-green-600 text-white">
