@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
+import { AuthProvider } from "../lib/auth-context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,9 +29,13 @@ export default function RootLayout({ children }) {
     <html lang="fr">
       <body className={inter.className}>
         <div className="flex flex-col min-h-screen">
-          <Navbar />
-          <main className="flex-grow">{children}</main>
-          <Footer />
+          <AuthProvider>
+          <div className="flex flex-col min-h-screen">
+            <Navbar />
+            {children}
+            <Footer />
+          </div>
+        </AuthProvider>
         </div>
       </body>
     </html>

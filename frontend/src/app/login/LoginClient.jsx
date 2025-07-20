@@ -1,4 +1,5 @@
 'use client'
+import { useAuth } from "@/lib/auth-context";
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -6,6 +7,8 @@ import { useState,useEffect } from 'react'
 import { LoginForm } from "@/components/login-form"
 
 export default function LoginClient() {
+  const { login } = useAuth();
+
   const router = useRouter();
   const [error, setError] = useState("");
 
@@ -38,11 +41,10 @@ export default function LoginClient() {
       router.push('/profil');
       return;
       }
-      if(data.token){
-        localStorage.setItem("token", data.token); 
-        setError("");
-        router.push('/profil');
-      } else {
+      if (data.token) {
+  login(data.token);  // Met à jour le contexte automatiquement
+  router.push("/profil");  // Pas besoin de router.refresh
+} else {
         setError(data.error || "Identifiants incorrects");
       }
     })

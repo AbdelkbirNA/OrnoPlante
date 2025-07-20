@@ -3,6 +3,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
+import { useAuth } from "@/lib/auth-context";
+
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -29,77 +31,7 @@ import {
 } from "lucide-react"
 
 // Hook auth centralisé
-function useAuth() {
-  const [token, setToken] = useState(null)
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
 
-  // Charger token depuis localStorage au montage
-  useEffect(() => {
-    const savedToken = localStorage.getItem("token")
-    if (savedToken) {
-      setToken(savedToken)
-    }
-    setLoading(false)
-  }, [])
-
-  // Charger profil utilisateur quand token est disponible
-  useEffect(() => {
-    if (!token) {
-      setUser(null)
-      return
-    }
-    const fetchProfile = async () => {
-      try {
-        setLoading(true)
-        const res = await fetch("http://localhost:8080/api/profil", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        if (!res.ok) {
-          throw new Error("Impossible de récupérer le profil")
-        }
-        const data = await res.json()
-        setUser(data)
-        setError(null)
-      } catch (err) {
-        setError(err.message)
-        setToken(null)
-        setUser(null)
-        localStorage.removeItem("token")
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchProfile()
-  }, [token])
-
-  // Fonction déconnexion
-  function logout() {
-    setToken(null)
-    setUser(null)
-    localStorage.removeItem("token")
-  }
-
-  // Fonction connexion simple (pour exemple)
-  function login(newToken) {
-    localStorage.setItem("token", newToken)
-    setToken(newToken)
-  }
-
-  return {
-    token,
-    user,
-    loading,
-    error,
-    login,
-    logout,
-    isLoggedIn: Boolean(token && user),
-  }
-}
 
 // Navigation principale
 const navigationItems = [
