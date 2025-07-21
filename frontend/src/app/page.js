@@ -13,7 +13,7 @@ export default function HomePage() {
       <section className="relative w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-gradient-to-br from-green-100 to-emerald-200 overflow-hidden">
         {/* Single background image with subtle animation */}
         <Image
-          src="/pep.jpg" // <-- Mettez votre chemin d'image ici
+          src="/home/pep.jpg" // <-- Mettez votre chemin d'image ici
           alt="Lush green nursery with potted plants"
           layout="fill"
           objectFit="cover"
@@ -25,14 +25,14 @@ export default function HomePage() {
           {/* Hero text container */}
           <div className="space-y-6">
             <h1 className="text-4xl font-extrabold tracking-tight text-green-900 sm:text-5xl md:text-6xl lg:text-7xl leading-tight">
-              Prenez soin de vos plantes avec l’intelligence de demain 🌱
+              Prenez soin de vos plantes avec l’intelligence de demain
             </h1>
             <p className="mx-auto max-w-[800px] text-lg text-green-800 md:text-xl">
               Bienvenue chez OrnoPlante, la pépinière intelligente. Explorez, apprenez et entretenez vos plantes avec
               l’aide de notre assistant IA spécialisé.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href="/discover">
+              <Link href="/plants">
                 <Button className="inline-flex h-12 items-center justify-center rounded-full bg-green-600 px-8 text-base font-medium text-white shadow-lg transition-colors hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2">
                   <Leaf className="mr-2 h-5 w-5" />
                   Découvrir nos plantes
@@ -65,11 +65,11 @@ export default function HomePage() {
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 justify-items-center sm:justify-items-start">
             {[
-              { name: "Plantes d’intérieur", image: "/p1.jpg" },
-              { name: "Plantes médicinales", image: "/p2.jpg" },
-              { name: "Plantes grasses et cactus", image: "/p3.jpg" },
-              { name: "Plantes d’extérieur", image: "/p4.jpg" },
-              { name: "Plantes décoratives", image: "/p5.jpg" },
+              { name: "Plantes d’intérieur", image: "/plants/pinter.jpg" },
+              { name: "Plantes médicinales", image: "/plants/pmedic.jpg" },
+              { name: "Plantes grasses et cactus", image: "/plants/pgrasse.jpg" },
+              { name: "Plantes d’extérieur", image: "/plants/pext.jpg" },
+              { name: "Plantes décoratives", image: "/plants/pdeco.jpg" },
             ].map((category, index) => (
               <Link href={`/categories/${category.name.toLowerCase().replace(/ /g, "-")}`} key={index}>
                 <Card className="flex flex-col items-center text-center p-4 bg-green-50 border-green-200 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer h-full w-full max-w-[250px]">
@@ -198,9 +198,8 @@ export default function HomePage() {
               À propos de OrnoPlante
             </h2>
             <p className="text-gray-600 md:text-lg">
-              OrnoPlante, c’est plus qu’une pépinière. C’est une communauté de passionnés du végétal, un lieu d’innovation
-              et un espace où la nature rencontre la technologie. Nous nous engageons à vous fournir les meilleures
-              ressources pour que vos plantes s'épanouissent.
+              OrnoPlante, c’est bien plus qu’une simple pépinière.
+              C’est une communauté de passionnés, un espace d’innovation où la nature s’allie à la technologie. Nous nous engageons à vous offrir les meilleures solutions pour que vos plantes s’épanouissent et embellissent votre quotidien.
             </p>
             <Link href="/about">
               <Button className="inline-flex h-12 items-center justify-center rounded-full bg-green-600 px-8 text-base font-medium text-white shadow-lg transition-colors hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2">
@@ -257,7 +256,7 @@ export default function HomePage() {
         <div className="px-4 md:px-6 max-w-7xl mx-auto">
           <div className="text-center space-y-6 mb-12">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl md:text-5xl">
-              Ce que nos utilisateurs disent
+              Ce que nos client disent
             </h2>
             <p className="mx-auto max-w-[700px] text-gray-600 md:text-lg">
               Des milliers de passionnés de plantes font confiance à OrnoPlante.
@@ -271,7 +270,7 @@ export default function HomePage() {
                 ))}
               </div>
               <p className="text-gray-700 italic mb-4">
-                “J’ai sauvé mon ficus grâce au chatbot de PlantHive ! Les conseils sont précis et faciles à suivre.”
+                “J’ai sauvé mon ficus grâce au chatbot de OrnoPlante ! Les conseils sont précis et faciles à suivre.”
               </p>
               <p className="font-semibold text-gray-900">– Sarah, Casablanca</p>
             </Card>

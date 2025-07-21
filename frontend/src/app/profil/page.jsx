@@ -1,4 +1,5 @@
 "use client"
+
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -7,19 +8,54 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { User, Mail, Calendar, Shield, Edit2, Save, X, ImageIcon } from "lucide-react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Switch } from "@/components/ui/switch"
+import { Progress } from "@/components/ui/progress"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { toast } from "sonner"
+import {
+  User,
+  Calendar,
+  Shield,
+  Edit2,
+  Save,
+  X,
+  ImageIcon,
+  Leaf,
+  Heart,
+  MessageSquare,
+  Eye,
+  Settings,
+  Bell,
+  Lock,
+  Activity,
+  TrendingUp,
+  Award,
+  Star,
+  Camera,
+} from "lucide-react"
 
-export default function ProfilePage() {
+export default function UserProfile() {
   const [userData, setUserData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [isEditing, setIsEditing] = useState(false)
   const [editData, setEditData] = useState(null)
-  const [selectedFile, setSelectedFile] = useState(null) // New state for selected file
-  const [profilePicturePreviewUrl, setProfilePicturePreviewUrl] = useState(null) // New state for preview URL
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [profilePicturePreviewUrl, setProfilePicturePreviewUrl] = useState(null)
   const [token, setToken] = useState(null)
+  const [activeTab, setActiveTab] = useState("overview")
 
-  // Récupère le token stocké (adapter selon ta gestion du token)
+  // Récupère le token stocké
   useEffect(() => {
     const storedToken = localStorage.getItem("token")
     if (storedToken) {
@@ -44,7 +80,7 @@ export default function ProfilePage() {
         const data = await res.json()
         setUserData(data)
         setEditData(data)
-        setProfilePicturePreviewUrl(data.profile_picture) // Set initial preview URL
+        setProfilePicturePreviewUrl(data.profile_picture)
       } catch (err) {
         setError(err.message)
       } finally {
@@ -54,7 +90,6 @@ export default function ProfilePage() {
     fetchProfile()
   }, [token])
 
-  // Cleanup for URL.createObjectURL to prevent memory leaks
   useEffect(() => {
     return () => {
       if (profilePicturePreviewUrl && profilePicturePreviewUrl.startsWith("blob:")) {
@@ -64,11 +99,10 @@ export default function ProfilePage() {
   }, [profilePicturePreviewUrl])
 
   const handleEdit = () => setIsEditing(true)
-
   const handleCancel = () => {
-    setEditData(userData) // Revert changes
-    setSelectedFile(null) // Clear selected file
-    setProfilePicturePreviewUrl(userData.profile_picture) // Revert preview to original
+    setEditData(userData)
+    setSelectedFile(null)
+    setProfilePicturePreviewUrl(userData.profile_picture)
     setIsEditing(false)
   }
 
@@ -83,21 +117,18 @@ export default function ProfilePage() {
       setProfilePicturePreviewUrl(URL.createObjectURL(file))
     } else {
       setSelectedFile(null)
-      setProfilePicturePreviewUrl(userData.profile_picture) // Revert to original if cleared
+      setProfilePicturePreviewUrl(userData.profile_picture)
     }
   }
 
   const handleSave = async () => {
-    setLoading(true) // Start loading for save operation
-    setError(null) // Clear previous errors
-
+    setLoading(true)
+    setError(null)
     try {
       let response
       if (selectedFile) {
-        // If a new file is selected, send FormData
         const formData = new FormData()
-        formData.append("profile_picture_file", selectedFile) // Key for the file on the backend
-        // Append other fields from editData
+        formData.append("profile_picture_file", selectedFile)
         if (editData.first_name) formData.append("first_name", editData.first_name)
         if (editData.last_name) formData.append("last_name", editData.last_name)
         if (editData.email) formData.append("email", editData.email)
@@ -106,12 +137,10 @@ export default function ProfilePage() {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
-            // Do NOT set Content-Type for FormData, browser sets it automatically with boundary
           },
           body: formData,
         })
       } else {
-        // If no new file, send JSON
         response = await fetch("http://localhost:8080/api/user/update", {
           method: "PUT",
           headers: {
@@ -129,13 +158,19 @@ export default function ProfilePage() {
 
       const updatedUser = await response.json()
       setUserData(updatedUser)
-      setEditData(updatedUser) // Update editData with the latest saved data
-      setSelectedFile(null) // Clear selected file after successful upload
-      setProfilePicturePreviewUrl(updatedUser.profile_picture) // Update preview with new URL from backend
+      setEditData(updatedUser)
+      setSelectedFile(null)
+      setProfilePicturePreviewUrl(updatedUser.profile_picture)
       setIsEditing(false)
-      console.log("Sauvegardé:", updatedUser)
+
+      toast.success("Profil mis à jour", {
+        description: "Vos informations ont été sauvegardées avec succès.",
+      })
     } catch (err) {
       setError(err.message)
+      toast.error("Erreur", {
+        description: err.message,
+      })
     } finally {
       setLoading(false)
     }
@@ -151,102 +186,296 @@ export default function ProfilePage() {
   const getUserTypeColor = (type) => {
     switch (type) {
       case "admin":
-        return "bg-red-100 text-red-800"
+        return "bg-gradient-to-r from-red-500 to-pink-500 text-white"
+      case "premium":
+        return "bg-gradient-to-r from-yellow-500 to-orange-500 text-white"
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gradient-to-r from-green-500 to-blue-500 text-white"
     }
   }
 
-  if (loading) return <div>Chargement...</div>
-  if (error) return <div>Erreur : {error}</div>
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Chargement de votre profil...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6 text-center">
+            <div className="text-red-500 mb-4">
+              <Shield className="h-12 w-12 mx-auto" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">Erreur d'accès</h3>
+            <p className="text-gray-600">{error}</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   if (!userData) return <div>Aucun utilisateur trouvé</div>
 
-  // Données statiques pour stats (remplace par dynamique quand dispo)
+  // Données statiques pour stats
   const staticStats = {
     plants: 12,
     favorites: 8,
     chatbot_questions: 25,
     visit_statistics: 156,
+    level: 3,
+    experience: 750,
+    nextLevelExp: 1000,
   }
 
+  const recentActivity = [
+    { type: "plant", action: "Ajouté une nouvelle plante", item: "Monstera Deliciosa", time: "Il y a 2h" },
+    { type: "favorite", action: "Ajouté aux favoris", item: "Ficus Benjamina", time: "Il y a 1 jour" },
+    { type: "question", action: "Posé une question", item: "Comment arroser ma lavande ?", time: "Il y a 2 jours" },
+    { type: "achievement", action: "Débloquer un succès", item: "Expert en plantes", time: "Il y a 3 jours" },
+  ]
+
+  const achievements = [
+    { name: "Premier pas", description: "Première connexion", icon: "🌱", unlocked: true },
+    { name: "Collectionneur", description: "10 plantes ajoutées", icon: "🌿", unlocked: true },
+    { name: "Expert", description: "50 questions posées", icon: "🧠", unlocked: false },
+    { name: "Influenceur", description: "100 favoris", icon: "⭐", unlocked: false },
+  ]
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* En-tête profil */}
-        <div className="bg-white rounded-lg shadow-sm border mb-6">
-          <div className="px-6 py-8 flex items-center justify-between">
-            <div className="flex items-center space-x-6">
-              <Avatar className="h-20 w-20">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+      {/* Header avec bannière */}
+      <div className="relative">
+        <div className="h-48 bg-green-600"></div>
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute bottom-0 left-0 right-0 p-6">
+          <div className="max-w-6xl mx-auto flex items-end gap-6">
+            <div className="relative">
+              <Avatar className="h-32 w-32 border-4 border-white shadow-xl">
                 <AvatarImage
-                  src={profilePicturePreviewUrl?.startsWith("blob:")
-                    ? profilePicturePreviewUrl
-                      : `http://localhost:8080${profilePicturePreviewUrl}` }
-                        
-                      />
-                <AvatarFallback className="text-xl">
+                  src={
+                    profilePicturePreviewUrl?.startsWith("blob:")
+                      ? profilePicturePreviewUrl
+                      : `http://localhost:8080${profilePicturePreviewUrl}`
+                  }
+                />
+                <AvatarFallback className="text-2xl bg-gradient-to-br from-green-400 to-blue-400 text-white">
                   {userData.first_name?.[0]}
                   {userData.last_name?.[0]}
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">
-                  {userData.first_name} {userData.last_name}
-                </h1>
-                <p className="text-gray-600 flex items-center mt-1">
-                  <Mail className="h-4 w-4 mr-2" />
-                  {userData.email}
-                </p>
-                <div className="flex items-center mt-2 space-x-3">
-                  <Badge className={getUserTypeColor(userData.user_type)}>
-                    <Shield className="h-3 w-3 mr-1" />
-                    {userData.user_type || "utilisateur"}
-                  </Badge>
-                  <span className="text-sm text-gray-500 flex items-center">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    Membre depuis {formatDate(userData.registration_date)}
-                  </span>
-                </div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    size="sm"
+                    className="absolute bottom-2 right-2 rounded-full h-8 w-8 p-0 bg-white text-gray-700 hover:bg-gray-100"
+                  >
+                    <Camera className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Changer la photo de profil</DialogTitle>
+                    <DialogDescription>Sélectionnez une nouvelle photo pour votre profil.</DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="flex justify-center">
+                      <Avatar className="h-24 w-24">
+                        <AvatarImage src={profilePicturePreviewUrl || "/placeholder.svg"} />
+                        <AvatarFallback>
+                          <ImageIcon className="h-12 w-12 text-gray-400" />
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <Input type="file" accept="image/*" onChange={handleFileChange} />
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={handleSave} disabled={!selectedFile}>
+                      Sauvegarder
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+            <div className="text-white pb-4">
+              <h1 className="text-4xl font-bold mb-2">
+                {userData.first_name} {userData.last_name}
+              </h1>
+              <p className="text-xl opacity-90 mb-3">{userData.email}</p>
+              <div className="flex items-center gap-4">
+                <Badge className={getUserTypeColor(userData.user_type)}>
+                  <Shield className="h-3 w-3 mr-1" />
+                  {userData.user_type || "utilisateur"}
+                </Badge>
+                <span className="flex items-center opacity-90">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Membre depuis {formatDate(userData.registration_date)}
+                </span>
               </div>
             </div>
-            <Button onClick={handleEdit} disabled={isEditing}>
-              <Edit2 className="h-4 w-4 mr-2" />
-              Modifier
-            </Button>
           </div>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Infos persos */}
-          <div className="lg:col-span-2">
-            <Card>
+      </div>
+
+      {/* Contenu principal */}
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList className="grid w-full grid-cols-5 bg-white/50 backdrop-blur-sm">
+            <TabsTrigger value="overview" className="flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              Vue d'ensemble
+            </TabsTrigger>
+            <TabsTrigger value="profile" className="flex items-center gap-2">
+              <User className="h-4 w-4" />
+              Profil
+            </TabsTrigger>
+            <TabsTrigger value="stats" className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Statistiques
+            </TabsTrigger>
+            <TabsTrigger value="achievements" className="flex items-center gap-2">
+              <Award className="h-4 w-4" />
+              Succès
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              Paramètres
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Vue d'ensemble */}
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-green-100">Mes plantes</p>
+                      <p className="text-3xl font-bold">{staticStats.plants}</p>
+                    </div>
+                    <Leaf className="h-8 w-8 text-green-200" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-red-500 to-pink-600 text-white border-0">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-red-100">Favoris</p>
+                      <p className="text-3xl font-bold">{staticStats.favorites}</p>
+                    </div>
+                    <Heart className="h-8 w-8 text-red-200" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-blue-100">Questions</p>
+                      <p className="text-3xl font-bold">{staticStats.chatbot_questions}</p>
+                    </div>
+                    <MessageSquare className="h-8 w-8 text-blue-200" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-purple-100">Visites</p>
+                      <p className="text-3xl font-bold">{staticStats.visit_statistics}</p>
+                    </div>
+                    <Eye className="h-8 w-8 text-purple-200" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Niveau et expérience */}
+              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Star className="h-5 w-5 text-yellow-500" />
+                    Niveau et Expérience
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl font-bold">Niveau {staticStats.level}</span>
+                    <Badge className="bg-yellow-100 text-yellow-800">
+                      {staticStats.experience}/{staticStats.nextLevelExp} XP
+                    </Badge>
+                  </div>
+                  <Progress value={(staticStats.experience / staticStats.nextLevelExp) * 100} className="h-3" />
+                  <p className="text-sm text-gray-600">
+                    Plus que {staticStats.nextLevelExp - staticStats.experience} XP pour le niveau suivant !
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Activité récente */}
+              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="h-5 w-5 text-blue-500" />
+                    Activité récente
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ScrollArea className="h-48">
+                    <div className="space-y-4">
+                      {recentActivity.map((activity, index) => (
+                        <div key={index} className="flex items-start gap-3">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">{activity.action}</p>
+                            <p className="text-sm text-gray-600">{activity.item}</p>
+                            <p className="text-xs text-gray-500">{activity.time}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Profil */}
+          <TabsContent value="profile" className="space-y-6">
+            <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <User className="h-5 w-5 mr-2" />
-                  Informations personnelles
-                </CardTitle>
-                <CardDescription>Gérez vos informations de profil</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <User className="h-5 w-5 text-green-500" />
+                      Informations personnelles
+                    </CardTitle>
+                    <CardDescription>Gérez vos informations de profil</CardDescription>
+                  </div>
+                  {!isEditing && (
+                    <Button onClick={handleEdit} className="bg-gradient-to-r from-green-500 to-blue-500">
+                      <Edit2 className="h-4 w-4 mr-2" />
+                      Modifier
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 {isEditing ? (
                   <>
-                    <div className="space-y-2">
-                      <Label htmlFor="profile_picture">Photo de profil</Label>
-                      <div className="flex items-center space-x-4">
-                        <Avatar className="h-16 w-16">
-                          <AvatarImage src={profilePicturePreviewUrl || "/placeholder.svg"} />
-                          <AvatarFallback>
-                            <ImageIcon className="h-8 w-8 text-gray-400" />
-                          </AvatarFallback>
-                        </Avatar>
-                        <Input
-                          id="profile_picture"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleFileChange}
-                          className="flex-1"
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="first_name">Prénom</Label>
                         <Input
@@ -254,6 +483,7 @@ export default function ProfilePage() {
                           value={editData.first_name || ""}
                           onChange={(e) => handleInputChange("first_name", e.target.value)}
                           placeholder="Votre prénom"
+                          className="bg-white/50"
                         />
                       </div>
                       <div className="space-y-2">
@@ -263,6 +493,7 @@ export default function ProfilePage() {
                           value={editData.last_name || ""}
                           onChange={(e) => handleInputChange("last_name", e.target.value)}
                           placeholder="Votre nom"
+                          className="bg-white/50"
                         />
                       </div>
                     </div>
@@ -274,10 +505,11 @@ export default function ProfilePage() {
                         value={editData.email}
                         onChange={(e) => handleInputChange("email", e.target.value)}
                         placeholder="votre.email@example.com"
+                        className="bg-white/50"
                       />
                     </div>
                     <div className="flex space-x-3">
-                      <Button onClick={handleSave} className="flex-1">
+                      <Button onClick={handleSave} className="flex-1 bg-gradient-to-r from-green-500 to-blue-500">
                         <Save className="h-4 w-4 mr-2" />
                         Sauvegarder
                       </Button>
@@ -288,83 +520,181 @@ export default function ProfilePage() {
                     </div>
                   </>
                 ) : (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-6">
+                      <div className="p-4 bg-white/50 rounded-lg">
                         <Label className="text-sm font-medium text-gray-500">Prénom</Label>
-                        <p className="mt-1 text-lg">{userData.first_name || "Non renseigné"}</p>
+                        <p className="mt-1 text-lg font-semibold">{userData.first_name || "Non renseigné"}</p>
                       </div>
-                      <div>
+                      <div className="p-4 bg-white/50 rounded-lg">
                         <Label className="text-sm font-medium text-gray-500">Nom</Label>
-                        <p className="mt-1 text-lg">{userData.last_name || "Non renseigné"}</p>
+                        <p className="mt-1 text-lg font-semibold">{userData.last_name || "Non renseigné"}</p>
                       </div>
                     </div>
-                    <Separator />
-                    <div>
-                      <Label className="text-sm font-medium text-gray-500">Adresse email</Label>
-                      <p className="mt-1 text-lg">{userData.email}</p>
-                    </div>
-                    <Separator />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
+                    <div className="space-y-6">
+                      <div className="p-4 bg-white/50 rounded-lg">
+                        <Label className="text-sm font-medium text-gray-500">Adresse email</Label>
+                        <p className="mt-1 text-lg font-semibold">{userData.email}</p>
+                      </div>
+                      <div className="p-4 bg-white/50 rounded-lg">
                         <Label className="text-sm font-medium text-gray-500">Type d'utilisateur</Label>
-                        <p className="mt-1 text-lg capitalize">{userData.user_type || "utilisateur"}</p>
+                        <p className="mt-1">
+                          <Badge className={getUserTypeColor(userData.user_type)}>
+                            {userData.user_type || "utilisateur"}
+                          </Badge>
+                        </p>
                       </div>
                     </div>
                   </div>
                 )}
               </CardContent>
             </Card>
-          </div>
-          {/* Statistiques (statique pour l’instant) */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Statistiques</CardTitle>
-                <CardDescription>Votre activité sur la plateforme</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Plantes</span>
-                  <Badge variant="secondary">{staticStats.plants}</Badge>
-                </div>
-                <Separator />
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Favoris</span>
-                  <Badge variant="secondary">{staticStats.favorites}</Badge>
-                </div>
-                <Separator />
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Questions chatbot</span>
-                  <Badge variant="secondary">{staticStats.chatbot_questions}</Badge>
-                </div>
-                <Separator />
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Visites</span>
-                  <Badge variant="secondary">{staticStats.visit_statistics}</Badge>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Informations du compte</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label className="text-sm font-medium text-gray-500">Date d'inscription</Label>
-                  <p className="mt-1 text-sm">{formatDate(userData.registration_date)}</p>
-                </div>
-                <Separator />
-                <div>
-                  <Label className="text-sm font-medium text-gray-500">Statut</Label>
-                  <p className="mt-1">
-                    <Badge className="bg-green-100 text-green-800">Actif</Badge>
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+          </TabsContent>
+
+          {/* Statistiques */}
+          <TabsContent value="stats" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+                <CardHeader>
+                  <CardTitle>Progression mensuelle</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {["Janvier", "Février", "Mars", "Avril"].map((month, index) => (
+                      <div key={month} className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>{month}</span>
+                          <span>{Math.floor(Math.random() * 50) + 10} plantes</span>
+                        </div>
+                        <Progress value={Math.floor(Math.random() * 80) + 20} className="h-2" />
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+                <CardHeader>
+                  <CardTitle>Catégories préférées</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {[
+                      { name: "Plantes d'intérieur", percentage: 45 },
+                      { name: "Plantes tropicales", percentage: 30 },
+                      { name: "Succulentes", percentage: 15 },
+                      { name: "Plantes médicinales", percentage: 10 },
+                    ].map((category, index) => (
+                      <div key={index} className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>{category.name}</span>
+                          <span>{category.percentage}%</span>
+                        </div>
+                        <Progress value={category.percentage} className="h-2" />
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Succès */}
+          <TabsContent value="achievements" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {achievements.map((achievement, index) => (
+                <Card
+                  key={index}
+                  className={`border-0 shadow-xl ${
+                    achievement.unlocked ? "bg-gradient-to-br from-yellow-100 to-orange-100" : "bg-white/50 opacity-60"
+                  }`}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-4">
+                      <div className="text-4xl">{achievement.icon}</div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg">{achievement.name}</h3>
+                        <p className="text-gray-600">{achievement.description}</p>
+                        {achievement.unlocked ? (
+                          <Badge className="mt-2 bg-green-100 text-green-800">Débloqué</Badge>
+                        ) : (
+                          <Badge className="mt-2" variant="secondary">
+                            Verrouillé
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* Paramètres */}
+          <TabsContent value="settings" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Bell className="h-5 w-5 text-blue-500" />
+                    Notifications
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">Notifications email</p>
+                      <p className="text-sm text-gray-600">Recevoir des emails de notification</p>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">Notifications push</p>
+                      <p className="text-sm text-gray-600">Notifications dans le navigateur</p>
+                    </div>
+                    <Switch />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">Newsletter</p>
+                      <p className="text-sm text-gray-600">Conseils et actualités plantes</p>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Lock className="h-5 w-5 text-red-500" />
+                    Sécurité
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                    <Lock className="h-4 w-4 mr-2" />
+                    Changer le mot de passe
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                    <Shield className="h-4 w-4 mr-2" />
+                    Authentification à deux facteurs
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-red-600 hover:text-red-700 bg-transparent"
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Supprimer le compte
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   )

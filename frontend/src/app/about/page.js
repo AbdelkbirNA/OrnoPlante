@@ -44,20 +44,19 @@ export default function AboutPage() {
           <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-green-200 rounded-full opacity-25 animate-pulse delay-1000"></div>
           <div className="absolute bottom-10 right-10 w-20 h-20 bg-emerald-300 rotate-12 opacity-40 animate-spin slow"></div>
         </div>
-
         <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium text-green-700 animate-fade-in">
                 <Sparkles className="h-4 w-4" />
-                Depuis 2018
+                Depuis 2003
               </div>
               <h1 className="text-4xl md:text-6xl font-black text-green-900 leading-tight">
                 L'histoire
                 <span className="block text-emerald-600">d'OrnoPlante</span>
               </h1>
               <p className="text-lg text-green-800 leading-relaxed">
-                Pépinière passionnée qui transforme votre relation avec les plantes depuis 6 ans.
+                Pépinière passionnée qui transforme votre relation avec les plantes depuis plus de 20 ans.
               </p>
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-2 text-green-700">
@@ -94,17 +93,14 @@ export default function AboutPage() {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-emerald-500 rounded-3xl rotate-6 opacity-20 animate-pulse"></div>
               <Image
-                src="/pep.jpg"
+                src="/about/about.jpg"
                 alt="Pépinière OrnoPlante"
                 width={600}
                 height={400}
                 className="relative rounded-3xl shadow-2xl object-cover w-full h-[400px] hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute -bottom-4 -right-4 bg-white rounded-2xl p-3 shadow-xl">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs font-medium text-gray-700">En ligne depuis 2018</span>
-                </div>
+                
               </div>
             </div>
           </div>
@@ -121,43 +117,49 @@ export default function AboutPage() {
           <div className="relative">
             {/* Ligne centrale */}
             <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-green-400 to-emerald-600"></div>
-
             <div className="space-y-8">
               {[
                 {
-                  year: "2018",
+                  year: "2003",
                   title: "Les débuts",
-                  desc: "Création par Amina, passionnée de botanique",
+                  desc: "Création par Naima Mezgouri, passionnée de botanique",
                   icon: Sparkles,
                   side: "left",
                 },
                 {
-                  year: "2019",
+                  year: "2008",
                   title: "Première expansion",
                   desc: "Ouverture espace physique et ateliers",
                   icon: TreePine,
                   side: "right",
                 },
                 {
-                  year: "2021",
-                  title: "Innovation tech",
-                  desc: "Plateforme en ligne et assistant IA",
+                  year: "2015",
+                  title: "Modernisation",
+                  desc: "Développement des services numériques",
                   icon: Zap,
                   side: "left",
                 },
                 {
-                  year: "2023",
-                  title: "Reconnaissance",
-                  desc: "Certification écologique",
-                  icon: Award,
+                  year: "2020",
+                  title: "Innovation tech",
+                  desc: "Plateforme en ligne et assistant IA",
+                  icon: Zap,
                   side: "right",
                 },
                 {
-                  year: "2024",
+                  year: "2022",
+                  title: "Reconnaissance",
+                  desc: "Certification écologique",
+                  icon: Award,
+                  side: "left",
+                },
+                {
+                  year: "2025",
                   title: "Aujourd'hui",
                   desc: "+1200 clients, 500+ variétés",
                   icon: Heart,
-                  side: "left",
+                  side: "right",
                 },
               ].map((item, index) => {
                 const IconComponent = item.icon
@@ -247,7 +249,7 @@ export default function AboutPage() {
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-1">Vision</h3>
                       <p className="text-gray-600 text-sm">
-                        Référence au Maroc pour l'accompagnement végétal intelligent.
+                        Référence au Maroc pour l'accompagnement intelligent des plantes.
                       </p>
                     </div>
                   </div>
@@ -295,7 +297,7 @@ export default function AboutPage() {
               {
                 icon: Heart,
                 title: "Passion",
-                desc: "Amour du végétal",
+                desc: "Au service des plantes",
                 color: "from-emerald-400 to-green-500",
               },
               {
@@ -327,6 +329,34 @@ export default function AboutPage() {
                 </Card>
               )
             })}
+          </div>
+        </div>
+      </section>
+      {/* Certifications */}
+      <section className="w-full py-16 bg-gradient-to-br from-green-50 to-emerald-50">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">🏆 Certifications</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">Engagement qualité reconnu</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[
+              { name: "Bio Maroc", desc: "Agriculture bio" },
+              { name: "Éco-Label", desc: "Pratiques durables" },
+              { name: "Qualité Maroc", desc: "Standards nationaux" },
+              { name: "ISO 14001", desc: "Management environnemental" },
+            ].map((cert, index) => (
+              <Card
+                key={index}
+                className="p-4 bg-white border-green-200 shadow-lg hover:shadow-xl transition-all duration-300 text-center group"
+              >
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-green-500 transition-colors duration-300">
+                  <Award className="h-6 w-6 text-green-600 group-hover:text-white transition-colors duration-300" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1 text-sm">{cert.name}</h3>
+                <p className="text-xs text-gray-600">{cert.desc}</p>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
@@ -419,8 +449,8 @@ export default function AboutPage() {
                   <div className="relative">
                     <div className="absolute inset-0 bg-green-300 rounded-2xl rotate-6 opacity-30"></div>
                     <Image
-                      src="/placeholder.svg?height=250&width=250"
-                      alt="Amina - Fondatrice"
+                      src="/about/j3.jpg"
+                      alt="Naima Mezgouri - Fondatrice"
                       width={250}
                       height={250}
                       className="relative rounded-2xl object-cover w-full h-[250px]"
@@ -431,11 +461,12 @@ export default function AboutPage() {
                   </div>
                   <div className="space-y-3">
                     <div>
-                      <h3 className="text-2xl font-bold text-gray-900 mb-1">Amina Benali</h3>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-1">Naima Mezgouri</h3>
                       <p className="text-green-600 font-semibold mb-3">Fondatrice & Experte botanique</p>
                     </div>
                     <p className="text-gray-600 text-sm leading-relaxed">
-                      15 ans d'expérience en horticulture. Vision : démocratiser l'accès aux plantes via la technologie.
+                      Plus de 20 ans d'expérience en horticulture. Vision : démocratiser l'accès aux plantes via la
+                      technologie.
                     </p>
                     <div className="flex items-center gap-3">
                       <div className="flex gap-1">
@@ -453,21 +484,22 @@ export default function AboutPage() {
                 </div>
               </Card>
             </div>
-
             {/* Autres membres */}
-            <div className="space-y-4">
+             <div className="space-y-4">
               {[
                 {
                   name: "Youssef Alami",
                   role: "Jardinier Expert",
                   desc: "Spécialiste paysagisme",
                   skills: ["Paysagisme"],
+                  image: "/about/j1.jpg",
                 },
                 {
-                  name: "Fatima Zahra",
-                  role: "Conseillère",
-                  desc: "Experte plantes intérieur",
+                  name: "Yassine cherki",
+                  role: "Conseiller spécialisé",
+                  desc: "Plantes d’intérieur & entretien",
                   skills: ["Conseil"],
+                  image: "/about/j2.jpg",
                 },
               ].map((member, index) => (
                 <Card
@@ -477,7 +509,7 @@ export default function AboutPage() {
                   <div className="flex items-center gap-3">
                     <div className="relative">
                       <Image
-                        src={`/placeholder.svg?height=60&width=60`}
+                        src={member.image || "/placeholder.svg"}
                         alt={member.name}
                         width={60}
                         height={60}
@@ -502,6 +534,7 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+      
 
       {/* Nos Services */}
       <section className="w-full py-16 bg-gradient-to-br from-gray-50 to-green-50">
@@ -516,7 +549,7 @@ export default function AboutPage() {
                 icon: ShoppingCart,
                 title: "Vente plantes",
                 desc: "500+ variétés disponibles",
-                price: "À partir de 25 DH",
+                price: "À partir de 5 DH",
                 color: "hover:bg-green-500",
                 features: ["Livraison gratuite +200 DH", "Garantie 30 jours"],
               },
@@ -565,7 +598,7 @@ export default function AboutPage() {
               return (
                 <Card
                   key={index}
-                  className={`group p-4 bg-white border-2 border-transparent hover:border-green-300 shadow-lg hover:shadow-xl transition-all duration-500 cursor-pointer overflow-hidden relative`}
+                  className={` p-4 bg-white border-2 border-transparent hover:border-green-300 shadow-lg hover:shadow-xl transition-all duration-500 cursor-pointer overflow-hidden relative`}
                 >
                   <div
                     className={`absolute inset-0 ${service.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
@@ -614,12 +647,12 @@ export default function AboutPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              { title: "Jardin moderne", category: "Aménagement", image: "modern garden design" },
-              { title: "Jungle urbaine", category: "Intérieur", image: "indoor plant jungle" },
-              { title: "Terrasse végétale", category: "Extérieur", image: "green terrace plants" },
-              { title: "Bureau végétal", category: "Pro", image: "office plants workspace" },
-              { title: "Jardin thérapeutique", category: "Médicinal", image: "medicinal herb garden" },
-              { title: "Mur végétal", category: "Commercial", image: "restaurant green wall" },
+              { title: "Jardin moderne", category: "Aménagement", image: "/about/jmoderne.jpg" },
+              { title: "Jungle urbaine", category: "Intérieur", image: "/about/jurbaine.jpg" },
+              { title: "Terrasse végétale", category: "Extérieur", image: "/about/tvege.jpg" },
+              { title: "Bureau végétal", category: "Pro", image: "/about/bvege.jpg" },
+              { title: "Jardin thérapeutique", category: "Médicinal", image: "/about/jthera.jpg" },
+              { title: "Mur végétal", category: "Commercial", image: "/about/murveg.jpg" },
             ].map((project, index) => (
               <Card
                 key={index}
@@ -627,7 +660,7 @@ export default function AboutPage() {
               >
                 <div className="relative overflow-hidden">
                   <Image
-                    src={`/placeholder.svg?height=200&width=300&query=${project.image}`}
+                    src={project.image}
                     alt={project.title}
                     width={300}
                     height={200}
@@ -648,14 +681,7 @@ export default function AboutPage() {
               </Card>
             ))}
           </div>
-          <div className="text-center mt-8">
-            <Link href="/gallery">
-              <Button className="inline-flex h-10 items-center justify-center rounded-2xl bg-green-600 px-6 text-sm font-medium text-white shadow-lg transition-all duration-300 hover:bg-green-700 hover:shadow-xl hover:scale-105">
-                <Camera className="mr-2 h-4 w-4" />
-                Voir toute la galerie
-              </Button>
-            </Link>
-          </div>
+          
         </div>
       </section>
 
@@ -688,174 +714,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Section Localisation */}
-      <section className="w-full py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <div className="grid lg:grid-cols-2 gap-8 items-center">
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">📍 Venez nous voir</h2>
-                <p className="text-lg text-gray-600">Pépinière dans un cadre verdoyant à Chtouka</p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {[
-                  { icon: MapPin, title: "Adresse", info: "Chtouka, Maroc" },
-                  { icon: Clock, title: "Horaires", info: "Lun-Sam: 9h-18h" },
-                  { icon: Phone, title: "Téléphone", info: "+212 6XX XX XX XX" },
-                  { icon: Mail, title: "Email", info: "contact@ornoplante.ma" },
-                ].map((contact, index) => {
-                  const IconComponent = contact.icon
-                  return (
-                    <div
-                      key={index}
-                      className="flex items-start gap-3 p-3 bg-green-50 rounded-xl hover:bg-green-100 transition-colors duration-300 group"
-                    >
-                      <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                        <IconComponent className="h-4 w-4 text-white" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-gray-900 text-sm">{contact.title}</p>
-                        <p className="text-gray-600 text-xs">{contact.info}</p>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Link href="/contact">
-                  <Button className="inline-flex h-10 items-center justify-center rounded-2xl bg-green-600 px-6 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:bg-green-700 hover:shadow-xl hover:scale-105">
-                    <MapPin className="mr-2 h-4 w-4" />
-                    Nous visiter
-                  </Button>
-                </Link>
-                <Link href="tel:+212600000000">
-                  <Button
-                    variant="outline"
-                    className="inline-flex h-10 items-center justify-center rounded-2xl border-2 border-green-600 bg-white px-6 text-sm font-semibold text-green-700 shadow-lg transition-all duration-300 hover:bg-green-50 hover:shadow-xl"
-                  >
-                    <Phone className="mr-2 h-4 w-4" />
-                    Appeler
-                  </Button>
-                </Link>
-              </div>
-            </div>
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-emerald-500 rounded-3xl rotate-3 opacity-20"></div>
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3334.7415225185773!2d-8.2895074238468!3d33.29942455710499!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xda8ef9281414afd%3A0x85d2b442aa14e24b!2sOrnoplantes!5e0!3m2!1sfr!2sma!4v1752848095907!5m2!1sfr!2sma"
-                  width="100%"
-                  height="300"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  className="w-full h-[300px]"
-                ></iframe>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="w-full py-16 bg-gradient-to-br from-gray-50 to-green-50">
-        <div className="max-w-4xl mx-auto px-4 md:px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">❓ Questions Fréquentes</h2>
-            <p className="text-lg text-gray-600">Tout savoir sur OrnoPlante</p>
-          </div>
-          <div className="space-y-4">
-            {[
-              {
-                q: "Depuis quand OrnoPlante existe ?",
-                a: "Fondée en 2018 par Amina, plus de 6 ans d'expérience.",
-              },
-              {
-                q: "Garantie sur les plantes ?",
-                a: "Toutes nos plantes garanties 30 jours, remplacement gratuit.",
-              },
-              {
-                q: "Comment fonctionne l'IA ?",
-                a: "Assistant spécialisé botanique, diagnostic et conseils 24h/24.",
-              },
-              {
-                q: "Livraison au Maroc ?",
-                a: "Principales villes, gratuit +200 DH.",
-              },
-              {
-                q: "Ateliers jardinage ?",
-                a: "Ateliers réguliers tous niveaux, voir calendrier.",
-              },
-            ].map((faq, index) => (
-              <Card
-                key={index}
-                className="p-4 bg-white border-green-200 shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                <h3 className="text-base font-semibold text-gray-900 mb-2 flex items-start gap-2">
-                  <span className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 text-green-600 text-xs font-bold">
-                    {index + 1}
-                  </span>
-                  {faq.q}
-                </h3>
-                <p className="text-gray-600 ml-7 text-sm">{faq.a}</p>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Message final avec CTA */}
-      <section className="w-full py-16 bg-gradient-to-br from-green-600 via-emerald-600 to-green-700 text-white relative overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full opacity-5 -translate-x-48 -translate-y-48 animate-pulse"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full opacity-5 translate-x-48 translate-y-48 animate-pulse delay-1000"></div>
-        </div>
-        <div className="max-w-4xl mx-auto px-4 md:px-6 text-center relative z-10">
-          <div className="space-y-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-full mb-4 animate-bounce">
-              <Heart className="h-8 w-8" />
-            </div>
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">💬 Rejoignez OrnoPlante</h2>
-            <blockquote className="text-lg md:text-xl font-light leading-relaxed italic mb-6">
-              "Chaque plante a une histoire, chaque client devient jardinier. Cultivons ensemble un monde plus vert !"
-            </blockquote>
-            <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
-              <Link href="/discover">
-                <Button className="inline-flex h-12 items-center justify-center rounded-2xl bg-white px-8 text-base font-bold text-green-600 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-green-50">
-                  <Leaf className="mr-2 h-5 w-5" />
-                  Nos plantes
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href="/ai-assistant">
-                <Button
-                  variant="outline"
-                  className="inline-flex h-12 items-center justify-center rounded-2xl border-2 border-white bg-transparent px-8 text-base font-bold text-white shadow-xl transition-all duration-300 hover:bg-white hover:text-green-600 hover:shadow-2xl hover:scale-105"
-                >
-                  <Zap className="mr-2 h-5 w-5" />
-                  Tester l'IA
-                  <Sparkles className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-            <div className="flex justify-center gap-6 mt-8 text-green-100">
-              <div className="text-center">
-                <div className="text-xl font-bold">5000+</div>
-                <div className="text-xs">Plantes</div>
-              </div>
-              <div className="text-center">
-                <div className="text-xl font-bold">1200+</div>
-                <div className="text-xs">Clients</div>
-              </div>
-              <div className="text-center">
-                <div className="text-xl font-bold">98%</div>
-                <div className="text-xs">Satisfaction</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   )
 }
