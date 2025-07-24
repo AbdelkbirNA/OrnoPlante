@@ -6,7 +6,16 @@ const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 async function register(req, res) {
-  const { email, password } = req.body;
+  const { first_name, last_name, email, password, confirm_password } = req.body;
+
+  // Validation basique
+  if (!first_name || !last_name || !email || !password || !confirm_password) {
+    return res.status(400).json({ error: "Tous les champs sont obligatoires" });
+  }
+
+  if (password !== confirm_password) {
+    return res.status(400).json({ error: "Les mots de passe ne correspondent pas" });
+  }
 
   try {
     // Vérifier si l'utilisateur existe déjà
@@ -21,6 +30,8 @@ async function register(req, res) {
     // Créer un nouvel utilisateur
     const newUser = await prisma.user.create({
       data: {
+        first_name,
+        last_name,
         email,
         password: hashedPassword,
         user_type: "user", // valeur par défaut
@@ -28,8 +39,8 @@ async function register(req, res) {
     });
 
     res.status(201).json({
-      message: "Utilisateur créé",
-      id: newUser.user_id,
+      message: "Utilisateur créé avec succès",
+      userId: newUser.user_id,
     });
   } catch (error) {
     console.error("Erreur register:", error);
@@ -89,8 +100,15 @@ console.log(req.user)
   }
 }
 
+function logout(req, res) {
+  res.json({ message: "Déconnexion réussie" });
+}
+
+
+
 module.exports = {
   register,
   login,
-    getMe
+  getMe,
+  logout
 };

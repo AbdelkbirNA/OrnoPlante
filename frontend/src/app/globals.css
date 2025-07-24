@@ -45,8 +45,6 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -76,6 +74,8 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
 }
 
 .dark {
@@ -119,4 +119,58 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Keyframes for subtle background pan/zoom animation */
+@keyframes background-pan {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+  50% {
+    transform: scale(1.05) translate(2%, 2%);
+  }
+  100% {
+    transform: scale(1) translate(0, 0);
+  }
+}
+/* Ajoutez ce CSS dans votre globals.css pour corriger le problème */
+
+/* Solution 1: Forcer la sidebar à respecter la navbar et le footer */
+[data-slot="sidebar-container"] {
+  /* Ajuster la position pour ne pas chevaucher la navbar et footer */
+  top: 80px !important; /* Ajustez selon la hauteur de votre navbar */
+  bottom: 60px !important; /* Ajustez selon la hauteur de votre footer */
+  height: calc(100vh - 140px) !important; /* navbar + footer height */
+  z-index: 5 !important; /* Plus bas que la navbar/footer */
+}
+
+/* S'assurer que la navbar reste au-dessus */
+nav {
+  position: relative;
+  z-index: 50;
+}
+
+/* S'assurer que le footer reste au-dessus */
+footer {
+  position: relative;
+  z-index: 50;
+}
+
+/* Alternative: Si vous voulez une sidebar complètement intégrée */
+.sidebar-integrated [data-slot="sidebar-container"] {
+  position: relative !important;
+  top: auto !important;
+  bottom: auto !important;
+  height: 100% !important;
+  z-index: auto !important;
+  inset: auto !important;
+}
+
+.sidebar-integrated [data-slot="sidebar-gap"] {
+  display: none !important;
+}
+
+.sidebar-integrated .group\/sidebar-wrapper {
+  min-height: auto !important;
+  height: 100% !important;
 }
