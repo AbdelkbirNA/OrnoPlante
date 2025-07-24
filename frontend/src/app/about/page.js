@@ -99,9 +99,7 @@ export default function AboutPage() {
                 height={400}
                 className="relative rounded-3xl shadow-2xl object-cover w-full h-[400px] hover:scale-105 transition-transform duration-500"
               />
-              <div className="absolute -bottom-4 -right-4 bg-white rounded-2xl p-3 shadow-xl">
-                
-              </div>
+              
             </div>
           </div>
         </div>

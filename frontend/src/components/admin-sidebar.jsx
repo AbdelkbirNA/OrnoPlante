@@ -1,6 +1,6 @@
 "use client"
 
-import { Leaf, MessageSquare, HelpCircle, Home } from "lucide-react"
+import { Leaf, MessageSquare, User, HelpCircle, Home } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -14,31 +14,39 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useRouter } from 'next/navigation'
 
 const menuItems = [
   {
     title: "Tableau de bord",
     icon: Home,
-    id: "dashboard",
+    route: "home", // correction ici
   },
   {
     title: "Gestion des plantes",
     icon: Leaf,
-    id: "plants",
+    route: "plants",
+  },
+  {
+    title: "Gestion des utilisateurs",
+    icon: User,
+    route: "users",
   },
   {
     title: "FAQ & Questions",
     icon: HelpCircle,
-    id: "faq",
+    route: "faq",
   },
   {
     title: "Analytics Chatbot",
     icon: MessageSquare,
-    id: "analytics",
+    route: "chatbot",
   },
 ]
 
-export function AdminSidebar({ activeSection, setActiveSection }) {
+export function AdminSidebar() {
+  const router = useRouter();
+
   return (
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border">
@@ -59,8 +67,8 @@ export function AdminSidebar({ activeSection, setActiveSection }) {
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
-                <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton onClick={() => setActiveSection(item.id)} isActive={activeSection === item.id}>
+                <SidebarMenuItem key={item.route}>
+                  <SidebarMenuButton onClick={() => router.push(`/dashboard/${item.route}`)}>
                     <item.icon className="h-4 w-4" />
                     <span>{item.title}</span>
                   </SidebarMenuButton>
@@ -70,8 +78,6 @@ export function AdminSidebar({ activeSection, setActiveSection }) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      
     </Sidebar>
   )
 }
