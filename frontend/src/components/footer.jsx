@@ -36,7 +36,7 @@ export default function Footer() {
       <div className="space-y-3">
         <Link href="/" className="flex items-center space-x-2">
           <Image
-              src="/logo.png"
+            src="/main/LOGO.png"
               alt="OrnoPlante Logo"
               width={32}
               height={32}

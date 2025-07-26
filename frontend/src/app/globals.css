@@ -146,7 +146,6 @@
 
 /* S'assurer que la navbar reste au-dessus */
 nav {
-  position: relative;
   z-index: 50;
 }
 

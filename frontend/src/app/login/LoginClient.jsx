@@ -28,7 +28,7 @@ export default function LoginClient() {
       const token = localStorage.getItem("token");
 
 
-    fetch("http://localhost:8080/api/login", {
+    fetch(`${process.env.NEXT_PUBLIC_API}/api/login`, {
       method:"POST",
       headers: { "Content-Type":"application/json" ,
     ...(token ? { "Authorization": `Bearer ${token}` } : {}),

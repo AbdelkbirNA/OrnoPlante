@@ -79,7 +79,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
             <Image
-              src="/logo.png"
+              src="/main/LOGO.png"
               alt="OrnoPlante Logo"
               width={32}
               height={32}

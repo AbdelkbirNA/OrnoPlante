@@ -70,7 +70,7 @@ export default function UserProfile() {
     if (!token) return
     async function fetchProfile() {
       try {
-        const res = await fetch("http://localhost:8080/api/profil", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API}/api/profil`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -133,7 +133,7 @@ export default function UserProfile() {
         if (editData.last_name) formData.append("last_name", editData.last_name)
         if (editData.email) formData.append("email", editData.email)
 
-        response = await fetch("http://localhost:8080/api/user/update", {
+        response = await fetch(`${process.env.NEXT_PUBLIC_API}/api/user/update`, {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -141,7 +141,7 @@ export default function UserProfile() {
           body: formData,
         })
       } else {
-        response = await fetch("http://localhost:8080/api/user/update", {
+        response = await fetch(`${process.env.NEXT_PUBLIC_API}/api/user/update`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -262,7 +262,7 @@ export default function UserProfile() {
                   src={
                     profilePicturePreviewUrl?.startsWith("blob:")
                       ? profilePicturePreviewUrl
-                      : `http://localhost:8080${profilePicturePreviewUrl}`
+                      : `${process.env.NEXT_PUBLIC_API}${profilePicturePreviewUrl}`
                   }
                 />
                 <AvatarFallback className="text-2xl bg-gradient-to-br from-green-400 to-blue-400 text-white">

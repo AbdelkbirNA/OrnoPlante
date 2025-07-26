@@ -3,6 +3,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/authRoutes"); 
 const profilRoute = require("./routes/profilRoute"); 
 const updatroute = require("./routes/updateRoutes"); 
+const planteRoutes = require("./routes/planteRoutes");
 const path = require("path");
 const multer = require("multer");
 const app = express();
@@ -37,5 +38,6 @@ app.get("/", (req, res) => {
 app.use("/api", authRoutes); 
 app.use("/api/",profilRoute);
 app.use("/api/",updatroute);
+app.use("/api/",planteRoutes);
 
 module.exports = app;

@@ -109,7 +109,7 @@ export default function HomePage() {
           </div>
           <div className="flex justify-center">
             <Image
-              src="/aipl.jpg"
+              src="/home/aihelp.jpg"
               alt="AI Chatbot interface"
               width={600}
               height={400}
@@ -136,19 +136,19 @@ export default function HomePage() {
                 name: "Monstera Deliciosa",
                 scientific: "Monstera deliciosa",
                 excerpt: "Arrosage : modéré | Lumière : indirecte",
-                image: "/p3.jpg",
+                image: "/plants/pext.jpg",
               },
               {
                 name: "Aloe Vera",
                 scientific: "Aloe barbadensis miller",
                 excerpt: "Arrosage : faible | Lumière : directe/indirecte",
-                image: "/p2.jpg",
+                image: "/plants/pdeco.jpg",
               },
               {
                 name: "Ficus Lyrata",
                 scientific: "Ficus lyrata",
                 excerpt: "Arrosage : régulier | Lumière : vive indirecte",
-                image: "/p1.jpg",
+                image: "/plants/pgrasse.jpg",
               },
             ].map((plant, index) => (
               <Card
@@ -186,7 +186,7 @@ export default function HomePage() {
         <div className="px-4 md:px-6 max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div className="flex justify-center">
             <Image
-              src="/abt.jpg"
+              src="/home/about.jpg"
               alt="HanPlant team or nursery"
               width={600}
               height={400}

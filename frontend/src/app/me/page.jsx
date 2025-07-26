@@ -23,7 +23,7 @@ export default function UserProfile() {
       }
 
       try {
-        const res = await fetch("http://localhost:8080/api/me", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API}/api/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",

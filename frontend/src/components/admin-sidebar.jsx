@@ -20,7 +20,7 @@ const menuItems = [
   {
     title: "Tableau de bord",
     icon: Home,
-    route: "home", // correction ici
+    route: "", // correction ici
   },
   {
     title: "Gestion des plantes",

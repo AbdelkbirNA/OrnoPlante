@@ -94,7 +94,6 @@ export function PlantsManagement() {
     photo_url: "",
   })
 
-  const [newTag, setNewTag] = useState("")
   const [plants, setPlantsState] = useState([
     {
       id: 1,
@@ -162,20 +161,7 @@ export function PlantsManagement() {
     },
   ])
 
-  const categories = ["Intérieur", "Extérieur", "Tropicale", "Médicinale", "Succulente", "Aromatique"]
-  const difficulties = ["Très facile", "Facile", "Moyen", "Difficile"]
-  const statuses = ["Publié", "Brouillon", "Archivé"]
-  const plantTypes = [
-    "Intérieur",
-    "Extérieur",
-    "Tropicale",
-    "Médicinale",
-    "Succulente",
-    "Aromatique",
-    "Fleur",
-    "Arbuste",
-    "Herbe aromatique",
-  ]
+  const categories = ["Intérieur", "Extérieur", "Cactus", "Médicinale", "Décoratives",]
 
   const formSteps = [
     {
@@ -222,33 +208,9 @@ export function PlantsManagement() {
     }
   })
 
-  const getDifficultyColor = (difficulty) => {
-    switch (difficulty) {
-      case "Très facile":
-        return "bg-green-100 text-green-800 border-green-200"
-      case "Facile":
-        return "bg-blue-100 text-blue-800 border-blue-200"
-      case "Moyen":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200"
-      case "Difficile":
-        return "bg-red-100 text-red-800 border-red-200"
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200"
-    }
-  }
+ 
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "Publié":
-        return "bg-green-100 text-green-800 border-green-200"
-      case "Brouillon":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200"
-      case "Archivé":
-        return "bg-gray-100 text-gray-800 border-gray-200"
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200"
-    }
-  }
+
 
   const handleDeletePlant = (plant) => {
     setPlantToDelete(plant)
@@ -264,20 +226,7 @@ export function PlantsManagement() {
     setPlantToDelete(null)
   }
 
-  const handleDuplicatePlant = (plant) => {
-    const newPlant = {
-      ...plant,
-      id: Math.max(...plants.map((p) => p.id)) + 1,
-      name: `${plant.name} (Copie)`,
-      status: "Brouillon",
-      views: 0,
-      createdAt: new Date().toISOString().split("T")[0],
-    }
-    setPlantsState([...plants, newPlant])
-    toast.success("Plante dupliquée", {
-      description: `Une copie de ${plant.name} a été créée.`,
-    })
-  }
+  
 
   // Fonctions pour gérer le formulaire de nouvelle plante
   const resetNewPlantForm = () => {
@@ -641,259 +590,7 @@ export function PlantsManagement() {
     </div>
   )
 
-  const PlantDetailsSheet = ({ plant, isOpen, onClose }) => (
-    <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-[600px] sm:w-[800px] overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
-            <Leaf className="h-5 w-5 text-green-600" />
-            {plant?.name}
-          </SheetTitle>
-          <SheetDescription>Détails complets et gestion de la plante</SheetDescription>
-        </SheetHeader>
-        <Tabs defaultValue="details" className="mt-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="details">Détails</TabsTrigger>
-            <TabsTrigger value="care">Entretien</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="settings">Paramètres</TabsTrigger>
-          </TabsList>
-          <TabsContent value="details" className="space-y-6">
-            <div className="grid gap-6">
-              <div className="flex items-center gap-4">
-                <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <ImageIcon className="h-8 w-8 text-gray-400" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-lg">{plant?.name}</h3>
-                  <p className="text-sm text-muted-foreground italic">{plant?.scientificName}</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Badge className={getDifficultyColor(plant?.difficulty)}>{plant?.difficulty}</Badge>
-                    <Badge className={getStatusColor(plant?.status)}>{plant?.status}</Badge>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-medium">{plant?.rating}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <Separator />
-              <div className="grid gap-4">
-                <div>
-                  <Label className="text-sm font-medium">Description</Label>
-                  <p className="text-sm text-muted-foreground mt-1">{plant?.description}</p>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-sm font-medium">Prix</Label>
-                    <p className="text-lg font-semibold text-green-600">{plant?.price}€</p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium">Stock</Label>
-                    <p className="text-lg font-semibold">{plant?.stock} unités</p>
-                  </div>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium">Tags</Label>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {plant?.tags?.map((tag, index) => (
-                      <Badge key={index} variant="outline" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-          <TabsContent value="care" className="space-y-6">
-            <div className="grid gap-6">
-              <div className="grid grid-cols-2 gap-4">
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-sm">
-                      <Droplets className="h-4 w-4 text-blue-500" />
-                      Arrosage
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">{plant?.waterFrequency}</p>
-                    <p className="text-xs text-muted-foreground mt-1">Dernier arrosage: {plant?.lastWatered}</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-sm">
-                      <Sun className="h-4 w-4 text-yellow-500" />
-                      Exposition
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">{plant?.lightRequirement}</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-sm">
-                      <Thermometer className="h-4 w-4 text-red-500" />
-                      Température
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">{plant?.temperature}</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-sm">
-                      <Droplets className="h-4 w-4 text-cyan-500" />
-                      Humidité
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">{plant?.humidity}</p>
-                  </CardContent>
-                </Card>
-              </div>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm">Calendrier d'entretien</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
-                    locale={fr}
-                    className="rounded-md border"
-                  />
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-          <TabsContent value="analytics" className="space-y-6">
-            <div className="grid gap-4">
-              <div className="grid grid-cols-3 gap-4">
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="flex items-center gap-2 text-sm">
-                      <Eye className="h-4 w-4" />
-                      Vues
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-2xl font-bold">{plant?.views}</p>
-                    <p className="text-xs text-muted-foreground">+12% ce mois</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="flex items-center gap-2 text-sm">
-                      <TrendingUp className="h-4 w-4" />
-                      Popularité
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-2xl font-bold">#{Math.floor(Math.random() * 10) + 1}</p>
-                    <p className="text-xs text-muted-foreground">Classement</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="flex items-center gap-2 text-sm">
-                      <BarChart3 className="h-4 w-4" />
-                      Conversion
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-2xl font-bold">{Math.floor(Math.random() * 20) + 5}%</p>
-                    <p className="text-xs text-muted-foreground">Taux d'achat</p>
-                  </CardContent>
-                </Card>
-              </div>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm">Performance mensuelle</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {["Janvier", "Février", "Mars", "Avril"].map((month, index) => (
-                      <div key={month} className="flex items-center justify-between">
-                        <span className="text-sm">{month}</span>
-                        <div className="flex items-center gap-2">
-                          <div className="w-32 bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-green-600 h-2 rounded-full"
-                              style={{ width: `${Math.floor(Math.random() * 80) + 20}%` }}
-                            ></div>
-                          </div>
-                          <span className="text-sm text-muted-foreground w-12">
-                            {Math.floor(Math.random() * 100) + 50}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-          <TabsContent value="settings" className="space-y-6">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-sm font-medium">Plante visible</Label>
-                  <p className="text-xs text-muted-foreground">Afficher cette plante sur le site</p>
-                </div>
-                <Switch defaultChecked={plant?.status === "Publié"} />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-sm font-medium">Notifications stock</Label>
-                  <p className="text-xs text-muted-foreground">Alertes quand le stock est bas</p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Seuil d'alerte stock</Label>
-                <Slider defaultValue={[5]} max={20} min={1} step={1} className="w-full" />
-                <p className="text-xs text-muted-foreground">Alerte si moins de 5 unités</p>
-              </div>
-              <Separator />
-              <div className="space-y-4">
-                <Label className="text-sm font-medium text-red-600">Zone de danger</Label>
-                <div className="space-y-2">
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-red-600 hover:text-red-700 bg-transparent"
-                    onClick={() => handleDuplicatePlant(plant)}
-                  >
-                    <Copy className="h-4 w-4 mr-2" />
-                    Dupliquer la plante
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-red-600 hover:text-red-700 bg-transparent"
-                  >
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    Exporter les données
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    className="w-full justify-start"
-                    onClick={() => handleDeletePlant(plant)}
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Supprimer définitivement
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </SheetContent>
-    </Sheet>
-  )
+  
 
   // Affichage conditionnel : formulaire ou liste des plantes
   if (showAddPlantForm) {
@@ -1014,11 +711,10 @@ export function PlantsManagement() {
                   <TableRow>
                     <TableHead>Plante</TableHead>
                     <TableHead>Catégorie</TableHead>
-                    <TableHead>Difficulté</TableHead>
-                    <TableHead>Stock</TableHead>
-                    <TableHead>Prix</TableHead>
-                    <TableHead>Note</TableHead>
-                    <TableHead>Statut</TableHead>
+                    <TableHead>light_requirement</TableHead>
+                    <TableHead>watering_frequency</TableHead>
+                    <TableHead>temperature_min</TableHead>
+                    <TableHead>temperature_max</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -1040,7 +736,7 @@ export function PlantsManagement() {
                         <Badge variant="outline">{plant.category}</Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge className={getDifficultyColor(plant.difficulty)}>{plant.difficulty}</Badge>
+                        <Badge >{plant.difficulty}</Badge>
                       </TableCell>
                       <TableCell>
                         <span className={plant.stock < 10 ? "text-red-600 font-medium" : ""}>{plant.stock}</span>
@@ -1052,9 +748,7 @@ export function PlantsManagement() {
                           <span className="font-medium">{plant.rating}</span>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(plant.status)}>{plant.status}</Badge>
-                      </TableCell>
+                      
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -1098,7 +792,6 @@ export function PlantsManagement() {
       </Card>
 
       {/* Sheet pour les détails de la plante */}
-      <PlantDetailsSheet plant={selectedPlant} isOpen={isSheetOpen} onClose={() => setIsSheetOpen(false)} />
 
       {/* Dialog de confirmation de suppression */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
