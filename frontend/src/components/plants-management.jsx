@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState ,useEffect} from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -94,72 +94,25 @@ export function PlantsManagement() {
     photo_url: "",
   })
 
-  const [plants, setPlantsState] = useState([
-    {
-      id: 1,
-      name: "Ficus Benjamina",
-      scientificName: "Ficus benjamina",
-      category: "Intérieur",
-      difficulty: "Facile",
-      views: 234,
-      status: "Publié",
-      rating: 4.8,
-      price: "25.99",
-      stock: 15,
-      lastWatered: "2024-01-15",
-      lightRequirement: "Lumière indirecte",
-      waterFrequency: "1-2 fois/semaine",
-      temperature: "18-24°C",
-      humidity: "40-60%",
-      image: "/placeholder.svg?height=100&width=100&text=Ficus",
-      description:
-        "Le Ficus Benjamina est une plante d'intérieur populaire, facile d'entretien et purificatrice d'air.",
-      tags: ["Purificateur d'air", "Débutant", "Bureau"],
-      createdAt: "2024-01-01",
-    },
-    {
-      id: 2,
-      name: "Monstera Deliciosa",
-      scientificName: "Monstera deliciosa",
-      category: "Tropicale",
-      difficulty: "Moyen",
-      views: 198,
-      status: "Publié",
-      rating: 4.9,
-      price: "45.99",
-      stock: 8,
-      lastWatered: "2024-01-14",
-      lightRequirement: "Lumière vive indirecte",
-      waterFrequency: "1 fois/semaine",
-      temperature: "20-26°C",
-      humidity: "60-80%",
-      image: "/placeholder.svg?height=100&width=100&text=Monstera",
-      description: "La Monstera Deliciosa est appréciée pour ses grandes feuilles perforées spectaculaires.",
-      tags: ["Tropicale", "Instagram", "Grande taille"],
-      createdAt: "2024-01-02",
-    },
-    {
-      id: 3,
-      name: "Lavande",
-      scientificName: "Lavandula angustifolia",
-      category: "Médicinale",
-      difficulty: "Facile",
-      views: 167,
-      status: "Brouillon",
-      rating: 4.7,
-      price: "12.99",
-      stock: 25,
-      lastWatered: "2024-01-16",
-      lightRequirement: "Plein soleil",
-      waterFrequency: "2-3 fois/semaine",
-      temperature: "15-25°C",
-      humidity: "30-50%",
-      image: "/placeholder.svg?height=100&width=100&text=Lavande",
-      description: "La lavande est une plante aromatique aux propriétés relaxantes et répulsives pour les insectes.",
-      tags: ["Aromatique", "Médicinale", "Extérieur"],
-      createdAt: "2024-01-03",
-    },
-  ])
+  const [plants, setPlants] = useState([]); // juste déclaration de state
+  const [loading, setLoading] = useState(true);
+
+  async function fetchPlants() {
+    try {
+      const res = await fetch("http://localhost:8080/api/plants");
+      if (!res.ok) throw new Error("Erreur lors de la récupération des plantes");
+      const data = await res.json();
+      setPlants(data);  // on met à jour le state ici
+    } catch (error) {
+      console.error(error);
+      setPlants([]);  // si erreur, on met tableau vide
+    } finally {
+      setLoading(false);
+    }
+  }  
+  useEffect(() => {
+    fetchPlants(); // appel au chargement du composant
+  }, []);
 
   const categories = ["Intérieur", "Extérieur", "Cactus", "Médicinale", "Décoratives",]
 

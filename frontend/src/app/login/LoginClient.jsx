@@ -62,7 +62,7 @@ export default function LoginClient() {
       </div>
       <div className="bg-muted relative hidden lg:block">
         <Image
-          src="/LoginBanner.png"
+          src="/main/LoginBanner.png"
           alt="image"
           fill
           className="absolute inset-0 h-full w-full object-contain dark:brightness-[0.2] dark:grayscale"
