@@ -102,7 +102,8 @@ export function PlantsManagement() {
       const res = await fetch("http://localhost:8080/api/plants");
       if (!res.ok) throw new Error("Erreur lors de la récupération des plantes");
       const data = await res.json();
-      setPlants(data);  // on met à jour le state ici
+      setPlants(data); 
+      console.log(typeof(data)) // on met à jour le state ici
     } catch (error) {
       console.error(error);
       setPlants([]);  // si erreur, on met tableau vide
@@ -139,23 +140,15 @@ export function PlantsManagement() {
 
   const filteredPlants = plants.filter((plant) => {
     const matchesSearch =
-      plant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      plant.scientificName.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = filterCategory === "all" || plant.category === filterCategory
-    const matchesStatus = filterStatus === "all" || plant.status === filterStatus
-    return matchesSearch && matchesCategory && matchesStatus
+      plant.plant_name.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesCategory = filterCategory === "all" || plant.type === filterCategory
+    return matchesSearch && matchesCategory 
   })
 
   const sortedPlants = [...filteredPlants].sort((a, b) => {
     switch (sortBy) {
       case "name":
-        return a.name.localeCompare(b.name)
-      case "views":
-        return b.views - a.views
-      case "rating":
-        return b.rating - a.rating
-      case "stock":
-        return b.stock - a.stock
+        return a.plant_name.localeCompare(b.plant_name)
       default:
         return 0
     }
@@ -673,32 +666,30 @@ export function PlantsManagement() {
                 </TableHeader>
                 <TableBody>
                   {sortedPlants.map((plant) => (
-                    <TableRow key={plant.id} className="hover:bg-muted/50">
+                    <TableRow key={plant.plant_id} className="hover:bg-muted/50">
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
                             <Leaf className="h-5 w-5 text-green-600" />
                           </div>
                           <div>
-                            <p className="font-medium">{plant.name}</p>
-                            <p className="text-sm text-muted-foreground italic">{plant.scientificName}</p>
-                          </div>
+                            <p className="font-medium">{plant.plant_name}</p>                          </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{plant.category}</Badge>
+                        <Badge variant="outline">{plant.type}</Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge >{plant.difficulty}</Badge>
+                        <Badge >{plant.light_requirement}</Badge>
                       </TableCell>
                       <TableCell>
-                        <span className={plant.stock < 10 ? "text-red-600 font-medium" : ""}>{plant.stock}</span>
+                        <span >{plant.watering_frequency}</span>
                       </TableCell>
-                      <TableCell className="font-medium text-green-600">{plant.price}€</TableCell>
+                      <TableCell className="font-medium text-green-600">{plant.temperature_min}€</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
                           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span className="font-medium">{plant.rating}</span>
+                          <span className="font-medium">{plant.temperature_max}</span>
                         </div>
                       </TableCell>
                       
