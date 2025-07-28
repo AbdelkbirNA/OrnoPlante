@@ -1,4 +1,5 @@
 "use client"
+
 import { useMemo, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -6,7 +7,29 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft, X, Leaf, Droplets, Star, CheckCircle, Save, Upload, ImageIcon, Trash2 } from "lucide-react"
+import { ArrowLeft, X, Leaf, Droplets, ImageIcon, CheckCircle, Save, Upload, Trash2 } from "lucide-react"
+
+// Define filterOptions here or import from a shared file if available
+const filterOptions = {
+  types: ["Tous", "Intérieur", "Extérieur", "Cactus", "Médicinale", "Décoratives"],
+  lightRequirements: [
+    "Tous",
+    "Lumière directe",
+    "Lumière indirecte",
+    "Lumière vive indirecte",
+    "Lumière faible à moyenne",
+    "Plein soleil",
+  ],
+  wateringFrequencies: [
+    "Tous",
+    "1-2 fois/semaine",
+    "1 fois/2 semaines",
+    "1 fois/semaine",
+    "2-3 fois/semaine",
+    "1 fois/mois",
+    "Tous les 2 jours",
+  ],
+}
 
 export default function AddPlantForm({
   newPlantForm,
@@ -18,7 +41,10 @@ export default function AddPlantForm({
   onNext,
   onPrev,
   validateCurrentStep,
-  plantTypes,
+  // Props for options, now directly from filterOptions
+  plantTypes, // This prop is still passed from page.tsx, but we'll use filterOptions.types directly
+  lightRequirements,
+  wateringFrequencies,
 }) {
   // Référence pour l'input file caché
   const fileInputRef = useRef(null)
@@ -41,8 +67,8 @@ export default function AddPlantForm({
       {
         id: "details",
         title: "Détails",
-        description: "Description, tags et paramètres avancés",
-        icon: Star,
+        description: "Description et photo", // Simplified description
+        icon: ImageIcon, // Changed icon to ImageIcon for image upload step
       },
     ],
     [],
@@ -64,16 +90,13 @@ export default function AddPlantForm({
         alert("Veuillez sélectionner un fichier image valide.")
         return
       }
-
       // Vérifier la taille du fichier (10MB max)
       if (file.size > 10 * 1024 * 1024) {
         alert("Le fichier est trop volumineux. Taille maximale : 10MB.")
         return
       }
-
       // Créer une URL pour l'aperçu
       const imageUrl = URL.createObjectURL(file)
-
       // Mettre à jour le formulaire avec le fichier et l'URL d'aperçu
       setNewPlantForm((prev) => ({
         ...prev,
@@ -89,13 +112,11 @@ export default function AddPlantForm({
     if (newPlantForm.image_preview) {
       URL.revokeObjectURL(newPlantForm.image_preview)
     }
-
     setNewPlantForm((prev) => ({
       ...prev,
       image_file: null,
       image_preview: null,
     }))
-
     // Réinitialiser l'input file
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
@@ -120,7 +141,6 @@ export default function AddPlantForm({
           <X className="h-4 w-4" />
         </Button>
       </div>
-
       {/* Indicateur de progression */}
       <Card>
         <CardContent className="pt-6">
@@ -148,7 +168,6 @@ export default function AddPlantForm({
           </div>
         </CardContent>
       </Card>
-
       {/* Contenu du formulaire */}
       <div className="max-w-4xl mx-auto">
         {/* Étape 1: Informations de base */}
@@ -183,11 +202,15 @@ export default function AddPlantForm({
                       <SelectValue placeholder="Sélectionner un type de plante" />
                     </SelectTrigger>
                     <SelectContent>
-                      {plantTypes.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
+                      {filterOptions.types.slice(1).map(
+                        (
+                          type, // Use filterOptions.types
+                        ) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        ),
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -208,7 +231,6 @@ export default function AddPlantForm({
             </CardContent>
           </Card>
         )}
-
         {/* Étape 2: Entretien */}
         {currentStep === 1 && (
           <Card className="border border-gray-200 shadow-sm">
@@ -221,25 +243,49 @@ export default function AddPlantForm({
                   <Label htmlFor="light_requirement" className="text-sm font-medium text-gray-700">
                     Besoins en lumière
                   </Label>
-                  <Input
-                    id="light_requirement"
-                    placeholder="Ex: Lumière indirecte vive"
+                  <Select
                     value={newPlantForm.light_requirement}
-                    onChange={(e) => setNewPlantForm((prev) => ({ ...prev, light_requirement: e.target.value }))}
-                    className="h-11"
-                  />
+                    onValueChange={(value) => setNewPlantForm((prev) => ({ ...prev, light_requirement: value }))}
+                  >
+                    <SelectTrigger className="h-11">
+                      <SelectValue placeholder="Sélectionner un besoin en lumière" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {filterOptions.lightRequirements.slice(1).map(
+                        (
+                          req, // Use filterOptions.lightRequirements
+                        ) => (
+                          <SelectItem key={req} value={req}>
+                            {req}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-3">
                   <Label htmlFor="watering_frequency" className="text-sm font-medium text-gray-700">
                     Fréquence d'arrosage
                   </Label>
-                  <Input
-                    id="watering_frequency"
-                    placeholder="Ex: 1-2 fois par semaine"
+                  <Select
                     value={newPlantForm.watering_frequency}
-                    onChange={(e) => setNewPlantForm((prev) => ({ ...prev, watering_frequency: e.target.value }))}
-                    className="h-11"
-                  />
+                    onValueChange={(value) => setNewPlantForm((prev) => ({ ...prev, watering_frequency: value }))}
+                  >
+                    <SelectTrigger className="h-11">
+                      <SelectValue placeholder="Sélectionner une fréquence d'arrosage" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {filterOptions.wateringFrequencies.slice(1).map(
+                        (
+                          freq, // Use filterOptions.wateringFrequencies
+                        ) => (
+                          <SelectItem key={freq} value={freq}>
+                            {freq}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -267,7 +313,7 @@ export default function AddPlantForm({
                     step="0.1"
                     placeholder="25"
                     value={newPlantForm.temperature_max}
-                    onChange={(e) => setNewPlantForm((prev) => ({ ...prev, temperature_max: e.target.value }))}
+                    onChange={(e) => setNewPlantForm((prev) => ({ ...prev, temperature_max:e.target.value }))}
                     className="h-11"
                   />
                 </div>
@@ -275,7 +321,6 @@ export default function AddPlantForm({
             </CardContent>
           </Card>
         )}
-
         {/* Étape 3: Détails */}
         {currentStep === 2 && (
           <Card className="border border-gray-200 shadow-sm">
@@ -285,10 +330,8 @@ export default function AddPlantForm({
             <CardContent className="space-y-6 pt-6">
               <div className="space-y-3">
                 <Label className="text-sm font-medium text-gray-700">Photo de la plante</Label>
-
                 {/* Input file caché */}
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-
                 {/* Zone d'upload ou aperçu de l'image */}
                 {newPlantForm.image_preview ? (
                   <div className="relative">
@@ -356,7 +399,6 @@ export default function AddPlantForm({
           </Card>
         )}
       </div>
-
       {/* Navigation */}
       <Card>
         <CardContent className="pt-6">

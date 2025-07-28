@@ -129,7 +129,7 @@ export default function Navbar() {
                   >
                     <div className="relative">
                       <Avatar className="h-8 w-8 ring-1 ring-white/30 shadow-md">
-                        <AvatarImage src={`http://localhost:8080${user.profile_picture}`} alt="Photo de profil" />
+                        <AvatarImage src={`${process.env.NEXT_PUBLIC_API}{user.profile_picture}`} alt="Photo de profil" />
                       </Avatar>
                     </div>
                     <div className="flex flex-col w-20 items-start">
@@ -151,7 +151,7 @@ export default function Navbar() {
                   <div className="px-3 py-2 border-b border-gray-100">
                     <div className="flex items-center space-x-3">
                       <Avatar className="h-10 w-10">
-                        <AvatarImage src={`http://localhost:8080${user.profile_picture}`} alt="Photo de profil" />
+                        <AvatarImage src={`${process.env.NEXT_PUBLIC_API}${user.profile_picture}`} alt="Photo de profil" />
                         <AvatarFallback className="bg-gradient-to-br from-green-500 to-green-600 text-white">
                           {(user.first_name ?? user.name ?? "U")?.charAt(0)?.toUpperCase()}
                         </AvatarFallback>

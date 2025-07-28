@@ -678,7 +678,7 @@ export default function PlantsManagement() {
                                   "/placeholder.svg?height=200&width=200&text=" +
                                     encodeURIComponent(plant.plant_name?.substring(0, 8)) ? (
                                   <img
-                                    src={`http://localhost:8080${plant.photo_url}`}
+                                    src={`${process.env.NEXT_PUBLIC_API}${plant.photo_url}`}
                                     alt={plant.plant_name}
                                     className="w-10 h-10 object-cover rounded-lg"
                                   />

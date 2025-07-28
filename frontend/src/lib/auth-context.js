@@ -29,7 +29,7 @@ export function AuthProvider({ children }) {
 
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/profil", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API}/api/profil`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

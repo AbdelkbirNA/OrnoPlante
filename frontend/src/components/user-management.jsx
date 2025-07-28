@@ -121,7 +121,7 @@ const response = await fetch(`${process.env.NEXT_PUBLIC_API}/api/users`);
     } catch (error) {
       console.error("Erreur:", error)
       toast.error("Erreur", {
-        description: "Impossible de charger les utilisateurs depuis http://localhost:8080/api/users",
+        description: "Impossible de charger les utilisateurs depuis ",
       })
       setUsers([])
     } finally {

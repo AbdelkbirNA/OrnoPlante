@@ -46,8 +46,8 @@ const addplant = async (req, res) => {
         type,
         light_requirement,
         watering_frequency,
-        temperature_min: temperature_min || null,
-        temperature_max: temperature_max || null,
+         temperature_min: temperature_min ? parseFloat(temperature_min) : null,
+        temperature_max: temperature_max ? parseFloat(temperature_max) : null,
         photo_url,
       },
     });
