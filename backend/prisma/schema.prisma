@@ -17,7 +17,7 @@ model User {
   profile_picture String? // stocke le chemin de l'image
   registration_date    DateTime            @default(now())
 
-  plants               Plant[]
+//  plants               Plant[]
   favorites            Favorite[]
   chatbot_questions    ChatbotQuestion[]
   visit_statistics     VisitStatistic[]
@@ -35,8 +35,9 @@ model Plant {
   temperature_max      Float?
   photo_url            String?
 
-  userId               Int?
-  user                 User?               @relation(fields: [userId], references: [user_id])
+  // Supprime ces lignes :
+  // userId               Int?
+  // user                 User?               @relation(fields: [userId], references: [user_id])
 
   favorites            Favorite[]
   visit_statistics     VisitStatistic[]

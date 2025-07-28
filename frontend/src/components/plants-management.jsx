@@ -1,12 +1,12 @@
 "use client"
-
-import { useState ,useEffect} from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import Image from "next/image";
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,18 +17,10 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Slider } from "@/components/ui/slider"
-import { Calendar } from "@/components/ui/calendar"
-import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Textarea } from "@/components/ui/textarea"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,42 +39,28 @@ import {
   Trash2,
   Eye,
   Filter,
-  Upload,
   MoreHorizontal,
   ArrowUpDown,
   ChevronDown,
-  ImageIcon,
   Leaf,
   Droplets,
-  Sun,
-  Thermometer,
   Star,
-  TrendingUp,
-  BarChart3,
-  Copy,
-  ExternalLink,
-  Save,
-  CheckCircle,
-  ArrowLeft,
-  X,
 } from "lucide-react"
-import { fr } from "date-fns/locale"
+import AddPlantForm from "@/components/add-plant-form"
 
-export function PlantsManagement() {
+export default function PlantsManagement() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedPlant, setSelectedPlant] = useState(null)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const [showAddPlantForm, setShowAddPlantForm] = useState(false)
   const [sortBy, setSortBy] = useState("name")
   const [filterCategory, setFilterCategory] = useState("all")
-  const [filterStatus, setFilterStatus] = useState("all")
   const [isLoading, setIsLoading] = useState(false)
-  const [selectedDate, setSelectedDate] = useState(new Date())
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [plantToDelete, setPlantToDelete] = useState(null)
   const [currentStep, setCurrentStep] = useState(0)
 
-  // État pour le formulaire de nouvelle plante
+  // État pour le formulaire de nouvelle plante - CORRIGÉ
   const [newPlantForm, setNewPlantForm] = useState({
     plant_name: "",
     description: "",
@@ -91,31 +69,39 @@ export function PlantsManagement() {
     watering_frequency: "",
     temperature_min: "",
     temperature_max: "",
-    photo_url: "",
+    image_file: null, // CORRIGÉ: au lieu de photo_url
+    image_preview: null, // CORRIGÉ: ajouté pour l'aperçu
   })
 
-  const [plants, setPlants] = useState([]); // juste déclaration de state
-  const [loading, setLoading] = useState(true);
+  const [plants, setPlants] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  // Types de plantes disponibles
+  const plantTypes = ["Intérieur", "Extérieur", "Cactus", "Médicinale", "Décoratives"]
 
   async function fetchPlants() {
     try {
-      const res = await fetch("http://localhost:8080/api/plants");
-      if (!res.ok) throw new Error("Erreur lors de la récupération des plantes");
-      const data = await res.json();
-      setPlants(data); 
-      console.log(typeof(data)) // on met à jour le state ici
+      setLoading(true)
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API}/api/plants`)
+      if (!res.ok) throw new Error("Erreur lors de la récupération des plantes")
+      const data = await res.json()
+      setPlants(data)
     } catch (error) {
-      console.error(error);
-      setPlants([]);  // si erreur, on met tableau vide
+      console.error(error)
+      setPlants([])
+      toast.error("Erreur", {
+        description: "Impossible de charger les plantes",
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }  
-  useEffect(() => {
-    fetchPlants(); // appel au chargement du composant
-  }, []);
+  }
 
-  const categories = ["Intérieur", "Extérieur", "Cactus", "Médicinale", "Décoratives",]
+  useEffect(() => {
+    fetchPlants()
+  }, [])
+
+  const categories = ["Intérieur", "Extérieur", "Cactus", "Médicinale", "Décoratives"]
 
   const formSteps = [
     {
@@ -139,10 +125,9 @@ export function PlantsManagement() {
   ]
 
   const filteredPlants = plants.filter((plant) => {
-    const matchesSearch =
-      plant.plant_name.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesSearch = plant.plant_name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory = filterCategory === "all" || plant.type === filterCategory
-    return matchesSearch && matchesCategory 
+    return matchesSearch && matchesCategory
   })
 
   const sortedPlants = [...filteredPlants].sort((a, b) => {
@@ -154,27 +139,32 @@ export function PlantsManagement() {
     }
   })
 
- 
-
-
-
   const handleDeletePlant = (plant) => {
     setPlantToDelete(plant)
     setDeleteDialogOpen(true)
   }
 
-  const confirmDelete = () => {
-    setPlantsState(plants.filter((p) => p.id !== plantToDelete.id))
-    toast.success("Plante supprimée", {
-      description: `${plantToDelete?.name} a été supprimée avec succès.`,
-    })
+  const confirmDelete = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API}/api/plant/${plantToDelete.plant_id}`, {
+        method: "DELETE",
+      })
+      if (response.ok) {
+        setPlants(plants.filter((p) => p.plant_id !== plantToDelete.plant_id))
+        toast.success("Plante supprimée", {
+          description: `${plantToDelete?.plant_name} a été supprimée avec succès.`,
+        })
+      } else {
+        toast.error("Erreur", { description: "Impossible de supprimer la plante." })
+      }
+    } catch (error) {
+      toast.error("Erreur", { description: "Erreur de connexion." })
+    }
     setDeleteDialogOpen(false)
     setPlantToDelete(null)
   }
 
-  
-
-  // Fonctions pour gérer le formulaire de nouvelle plante
+  // Fonctions pour gérer le formulaire de nouvelle plante - CORRIGÉ
   const resetNewPlantForm = () => {
     setNewPlantForm({
       plant_name: "",
@@ -184,7 +174,8 @@ export function PlantsManagement() {
       watering_frequency: "",
       temperature_min: "",
       temperature_max: "",
-      photo_url: "",
+      image_file: null, // CORRIGÉ: au lieu de photo_url
+      image_preview: null, // CORRIGÉ: ajouté
     })
     setCurrentStep(0)
   }
@@ -224,7 +215,8 @@ export function PlantsManagement() {
     }
   }
 
-  const handleSaveNewPlant = () => {
+  // FONCTION CORRIGÉE pour gérer l'upload d'image
+  const handleSaveNewPlant = async () => {
     // Validation finale
     if (!newPlantForm.plant_name.trim()) {
       toast.error("Erreur", { description: "Le nom de la plante est requis." })
@@ -235,526 +227,350 @@ export function PlantsManagement() {
       return
     }
 
-    const newPlant = {
-      id: Math.max(...plants.map((p) => p.id)) + 1,
-      plant_name: newPlantForm.plant_name.trim(),
-      description: newPlantForm.description.trim(),
-      type: newPlantForm.type,
-      light_requirement: newPlantForm.light_requirement.trim(),
-      watering_frequency: newPlantForm.watering_frequency.trim(),
-      temperature_min: Number.parseFloat(newPlantForm.temperature_min) || null,
-      temperature_max: Number.parseFloat(newPlantForm.temperature_max) || null,
-      photo_url:
-        newPlantForm.photo_url ||
-        "/placeholder.svg?height=200&width=200&text=" + encodeURIComponent(newPlantForm.plant_name.substring(0, 8)),
-      views: 0,
-      rating: 0,
-      createdAt: new Date().toISOString().split("T")[0],
+    try {
+      // Si pas d'image, utiliser JSON comme avant
+      if (!newPlantForm.image_file) {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API}/api/addplant`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            plant_name: newPlantForm.plant_name.trim(),
+            description: newPlantForm.description.trim(),
+            type: newPlantForm.type,
+            light_requirement: newPlantForm.light_requirement.trim(),
+            watering_frequency: newPlantForm.watering_frequency.trim(),
+            temperature_min: Number.parseFloat(newPlantForm.temperature_min) || null,
+            temperature_max: Number.parseFloat(newPlantForm.temperature_max) || null,
+            photo_url:
+              newPlantForm.photo_url ||
+              "/placeholder.svg?height=200&width=200&text=" +
+                encodeURIComponent(newPlantForm.plant_name.substring(0, 8)),
+          }),
+        })
+
+        if (response.ok) {
+          const responseData = await response.json()
+          const newPlant = responseData.plant
+          setPlants([...plants, newPlant])
+          toast.success("Plante créée", {
+            description: `${newPlant.plant_name} a été ajoutée avec succès au catalogue.`,
+          })
+          handleCloseNewPlantForm()
+        } else {
+          toast.error("Erreur", { description: "Impossible de créer la plante." })
+        }
+      } else {
+        // Si image, utiliser FormData
+        const formData = new FormData()
+        formData.append("plant_name", newPlantForm.plant_name.trim())
+        formData.append("description", newPlantForm.description.trim())
+        formData.append("type", newPlantForm.type)
+        formData.append("light_requirement", newPlantForm.light_requirement.trim())
+        formData.append("watering_frequency", newPlantForm.watering_frequency.trim())
+        formData.append("temperature_min", newPlantForm.temperature_min || "")
+        formData.append("temperature_max", newPlantForm.temperature_max || "")
+        formData.append("image", newPlantForm.image_file)
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API}/api/addplant`, {
+          method: "POST",
+          body: formData,
+        })
+
+        if (response.ok) {
+          const responseData = await response.json()
+          const newPlant = responseData.plant
+          setPlants([...plants, newPlant])
+          toast.success("Plante créée", {
+            description: `${newPlant.plant_name} a été ajoutée avec succès au catalogue.`,
+          })
+          handleCloseNewPlantForm()
+        } else {
+          toast.error("Erreur", { description: "Impossible de créer la plante." })
+        }
+      }
+    } catch (error) {
+      toast.error("Erreur", { description: "Erreur de connexion." })
     }
-
-    setPlantsState([...plants, newPlant])
-    toast.success("Plante créée", {
-      description: `${newPlant.plant_name} a été ajoutée avec succès au catalogue.`,
-    })
-    handleCloseNewPlantForm()
   }
-
-  // Formulaire d'ajout de plante dans la page
-  const AddPlantForm = () => (
-    <div className="space-y-8">
-      {/* Header du formulaire */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={handleCloseNewPlantForm} size="lg">
-            <ArrowLeft className="h-5 w-5 mr-2" />
-            Retour
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-green-600">Ajouter une nouvelle plante</h1>
-            <p className="text-muted-foreground mt-1">Créez une nouvelle fiche plante pour votre catalogue</p>
-          </div>
-        </div>
-        <Button variant="outline" onClick={handleCloseNewPlantForm} size="sm">
-          <X className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {/* Indicateur de progression */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between mb-6">
-            {formSteps.map((step, index) => (
-              <div key={step.id} className="flex items-center">
-                <div
-                  className={`flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all ${
-                    index <= currentStep ? "bg-green-600 border-green-600 text-white" : "border-gray-300 text-gray-400"
-                  }`}
-                >
-                  {index < currentStep ? <CheckCircle className="h-6 w-6" /> : <step.icon className="h-6 w-6" />}
-                </div>
-                {index < formSteps.length - 1 && (
-                  <div
-                    className={`w-24 h-0.5 mx-4 transition-all ${index < currentStep ? "bg-green-600" : "bg-gray-300"}`}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="text-center">
-            <h3 className="font-semibold text-lg">{formSteps[currentStep].title}</h3>
-            <p className="text-muted-foreground">{formSteps[currentStep].description}</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Contenu du formulaire */}
-      <div className="max-w-4xl mx-auto">
-        {/* Étape 1: Informations de base */}
-        {currentStep === 0 && (
-          <Card className="border-2 border-green-100">
-            <CardHeader className="bg-green-50">
-              <CardTitle className="flex items-center gap-2 text-green-800">
-                <Leaf className="h-6 w-6" />
-                Informations essentielles
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-8 pt-8">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="space-y-3">
-                  <Label htmlFor="plant_name" className="text-sm font-medium flex items-center gap-2">
-                    Nom de la plante <span className="text-red-500">*</span>
-                    {newPlantForm.plant_name && <CheckCircle className="h-5 w-5 text-green-600" />}
-                  </Label>
-                  <Input
-                    id="plant_name"
-                    placeholder="Ex: Ficus Benjamina"
-                    value={newPlantForm.plant_name}
-                    onChange={(e) => setNewPlantForm({ ...newPlantForm, plant_name: e.target.value })}
-                    className="h-12"
-                  />
-                </div>
-
-                <div className="space-y-3">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    Type de plante <span className="text-red-500">*</span>
-                    {newPlantForm.type && <CheckCircle className="h-5 w-5 text-green-600" />}
-                  </Label>
-                  <Select
-                    value={newPlantForm.type}
-                    onValueChange={(value) => setNewPlantForm({ ...newPlantForm, type: value })}
-                  >
-                    <SelectTrigger className="h-12">
-                      <SelectValue placeholder="Sélectionner un type de plante" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {plantTypes.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <Label htmlFor="description" className="text-sm font-medium">
-                  Description de la plante
-                </Label>
-                <Textarea
-                  id="description"
-                  placeholder="Décrivez les caractéristiques, l'origine et les particularités de cette plante..."
-                  rows={8}
-                  value={newPlantForm.description}
-                  onChange={(e) => setNewPlantForm({ ...newPlantForm, description: e.target.value })}
-                  className="resize-none"
-                />
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Étape 2: Entretien */}
-        {currentStep === 1 && (
-          <Card className="border-2 border-blue-100">
-            <CardHeader className="bg-blue-50">
-              <CardTitle className="flex items-center gap-2 text-blue-800">
-                <Droplets className="h-6 w-6" />
-                Conseils d'entretien
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-8 pt-8">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="space-y-3">
-                  <Label htmlFor="light_requirement" className="text-sm font-medium flex items-center gap-2">
-                    <Sun className="h-5 w-5 text-yellow-500" />
-                    Besoins en lumière
-                  </Label>
-                  <Input
-                    id="light_requirement"
-                    placeholder="Ex: Lumière indirecte vive, éviter le soleil direct"
-                    value={newPlantForm.light_requirement}
-                    onChange={(e) => setNewPlantForm({ ...newPlantForm, light_requirement: e.target.value })}
-                    className="h-12"
-                  />
-                </div>
-
-                <div className="space-y-3">
-                  <Label htmlFor="watering_frequency" className="text-sm font-medium flex items-center gap-2">
-                    <Droplets className="h-5 w-5 text-blue-500" />
-                    Fréquence d'arrosage
-                  </Label>
-                  <Input
-                    id="watering_frequency"
-                    placeholder="Ex: 1-2 fois par semaine, laisser sécher entre les arrosages"
-                    value={newPlantForm.watering_frequency}
-                    onChange={(e) => setNewPlantForm({ ...newPlantForm, watering_frequency: e.target.value })}
-                    className="h-12"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="space-y-3">
-                  <Label htmlFor="temperature_min" className="text-sm font-medium flex items-center gap-2">
-                    <Thermometer className="h-5 w-5 text-blue-500" />
-                    Température minimale (°C)
-                  </Label>
-                  <Input
-                    id="temperature_min"
-                    type="number"
-                    step="0.1"
-                    placeholder="15"
-                    value={newPlantForm.temperature_min}
-                    onChange={(e) => setNewPlantForm({ ...newPlantForm, temperature_min: e.target.value })}
-                    className="h-12"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <Label htmlFor="temperature_max" className="text-sm font-medium flex items-center gap-2">
-                    <Thermometer className="h-5 w-5 text-red-500" />
-                    Température maximale (°C)
-                  </Label>
-                  <Input
-                    id="temperature_max"
-                    type="number"
-                    step="0.1"
-                    placeholder="25"
-                    value={newPlantForm.temperature_max}
-                    onChange={(e) => setNewPlantForm({ ...newPlantForm, temperature_max: e.target.value })}
-                    className="h-12"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Étape 3: Détails */}
-        {currentStep === 2 && (
-          <Card className="border-2 border-purple-100">
-            <CardHeader className="bg-purple-50">
-              <CardTitle className="flex items-center gap-2 text-purple-800">
-                <Star className="h-6 w-6" />
-                Détails et finalisation
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-8 pt-8">
-              <div className="space-y-3">
-                <Label className="text-sm font-medium">Photo de la plante</Label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-16 text-center hover:border-green-400 transition-colors">
-                  <ImageIcon className="mx-auto h-24 w-24 text-gray-400 mb-6" />
-                  <div className="space-y-4">
-                    <Button variant="outline" size="lg" className="px-8 py-4 bg-transparent">
-                      <Upload className="mr-3 h-6 w-6" />
-                      Télécharger une photo
-                    </Button>
-                    <p className="text-muted-foreground">PNG, JPG, WEBP jusqu'à 10MB</p>
-                    {newPlantForm.photo_url && (
-                      <div className="mt-6 p-4 bg-green-50 rounded-lg">
-                        <p className="text-green-700">✓ Photo sélectionnée</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-8 bg-blue-50 rounded-lg">
-                <h4 className="font-semibold text-blue-900 mb-3">Conseils pour une bonne photo :</h4>
-                <ul className="text-blue-800 space-y-2">
-                  <li>• Utilisez un éclairage naturel</li>
-                  <li>• Montrez la plante entière</li>
-                  <li>• Évitez les arrière-plans encombrés</li>
-                  <li>• Prenez plusieurs angles si nécessaire</li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-
-      {/* Navigation */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex justify-between items-center">
-            <Button
-              variant="outline"
-              onClick={handlePrevStep}
-              disabled={currentStep === 0}
-              size="lg"
-              className="px-8 bg-transparent"
-            >
-              <ArrowLeft className="mr-2 h-5 w-5" />
-              Précédent
-            </Button>
-
-            <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">
-                Étape {currentStep + 1} sur {formSteps.length}
-              </span>
-            </div>
-
-            <div className="flex gap-4">
-              <Button variant="outline" onClick={handleCloseNewPlantForm} size="lg" className="px-8 bg-transparent">
-                Annuler
-              </Button>
-              {currentStep < formSteps.length - 1 ? (
-                <Button onClick={handleNextStep} disabled={!validateCurrentStep()} size="lg" className="px-8">
-                  Suivant
-                  <ArrowLeft className="ml-2 h-5 w-5 rotate-180" />
-                </Button>
-              ) : (
-                <Button onClick={handleSaveNewPlant} size="lg" className="px-8">
-                  <Save className="mr-2 h-5 w-5" />
-                  Créer la plante
-                </Button>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  )
-
-  
 
   // Affichage conditionnel : formulaire ou liste des plantes
   if (showAddPlantForm) {
-    return <AddPlantForm />
+    return (
+      <AddPlantForm
+        newPlantForm={newPlantForm}
+        setNewPlantForm={setNewPlantForm}
+        currentStep={currentStep}
+        setCurrentStep={setCurrentStep}
+        onClose={handleCloseNewPlantForm}
+        onSave={handleSaveNewPlant}
+        onNext={handleNextStep}
+        onPrev={handlePrevStep}
+        validateCurrentStep={validateCurrentStep}
+        plantTypes={plantTypes}
+        formSteps={formSteps}
+      />
+    )
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header avec actions avancées */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-            Gestion des plantes
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Gérez votre catalogue de {plants.length} plantes avec des outils avancés
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button onClick={handleOpenNewPlantForm} size="lg" className="px-6">
-            <Plus className="mr-2 h-5 w-5" />
-            Ajouter une plante
-          </Button>
-        </div>
-      </div>
-
-      {/* Barre de recherche et filtres avancés */}
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex-1 max-w-md">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Rechercher par nom ou nom scientifique..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
+      <div className="container mx-auto px-4 py-8">
+        <div className="space-y-8">
+          {/* Header avec actions avancées */}
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-white p-6 rounded-xl shadow-sm border">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Gestion des plantes</h1>
+              <p className="text-gray-600 mt-1">Gérez votre catalogue de {plants.length} plantes</p>
             </div>
             <div className="flex items-center gap-2">
-              {/* Filtre par catégorie */}
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Filter className="mr-2 h-4 w-4" />
-                    Catégorie
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-48">
-                  <Command>
-                    <CommandInput placeholder="Rechercher catégorie..." />
-                    <CommandList>
-                      <CommandEmpty>Aucune catégorie trouvée.</CommandEmpty>
-                      <CommandGroup>
-                        <CommandItem onSelect={() => setFilterCategory("all")}>Toutes les catégories</CommandItem>
-                        {categories.map((category) => (
-                          <CommandItem key={category} onSelect={() => setFilterCategory(category)}>
-                            {category}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              {/* Tri */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <ArrowUpDown className="mr-2 h-4 w-4" />
-                    Trier
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuLabel>Trier par</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup value={sortBy} onValueChange={setSortBy}>
-                    <DropdownMenuRadioItem value="name">Nom</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="views">Popularité</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="rating">Note</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="stock">Stock</DropdownMenuRadioItem>
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button
+                onClick={handleOpenNewPlantForm}
+                size="lg"
+                className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Ajouter une plante
+              </Button>
             </div>
           </div>
-        </CardHeader>
-      </Card>
 
-      {/* Tableau avancé avec skeleton loading */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>Catalogue des plantes</span>
-            <Badge variant="secondary">{sortedPlants.length} résultats</Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex items-center space-x-4">
-                  <Skeleton className="h-12 w-12 rounded-full" />
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-[200px]" />
-                    <Skeleton className="h-4 w-[150px]" />
+          {/* Barre de recherche et filtres avancés */}
+          <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+            <CardHeader>
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex-1 max-w-md">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Rechercher par nom ou nom scientifique..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 shadow-sm"
+                    />
                   </div>
                 </div>
-              ))}
+                <div className="flex items-center gap-2">
+                  {/* Filtre par catégorie */}
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" size="sm" className="shadow-sm bg-transparent">
+                        <Filter className="mr-2 h-4 w-4" />
+                        Catégorie
+                        <ChevronDown className="ml-2 h-4 w-4" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-48">
+                      <Command>
+                        <CommandInput placeholder="Rechercher catégorie..." />
+                        <CommandList>
+                          <CommandEmpty>Aucune catégorie trouvée.</CommandEmpty>
+                          <CommandGroup>
+                            <CommandItem onSelect={() => setFilterCategory("all")}>Toutes les catégories</CommandItem>
+                            {categories.map((category) => (
+                              <CommandItem key={category} onSelect={() => setFilterCategory(category)}>
+                                {category}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  {/* Tri */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="shadow-sm bg-transparent">
+                        <ArrowUpDown className="mr-2 h-4 w-4" />
+                        Trier
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuLabel>Trier par</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuRadioGroup value={sortBy} onValueChange={setSortBy}>
+                        <DropdownMenuRadioItem value="name">Nom</DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="views">Popularité</DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="rating">Note</DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="stock">Stock</DropdownMenuRadioItem>
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+
+          {/* Tableau avancé avec skeleton loading */}
+          <Card className="shadow-sm border border-gray-200">
+  <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50 border-b border-gray-200">
+    <CardTitle className="flex items-center justify-between">
+      <span className="text-xl font-semibold text-gray-900">Catalogue des plantes</span>
+      <Badge variant="secondary" className="bg-gray-100 text-gray-700 border-gray-200">
+        {sortedPlants.length} résultats
+      </Badge>
+    </CardTitle>
+  </CardHeader>
+  <CardContent className="p-0">
+    {loading ? (
+      <div className="space-y-4">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2 flex-1">
+              <Skeleton className="h-4 w-[200px]" />
+              <Skeleton className="h-4 w-[150px]" />
             </div>
-          ) : (
-            <ScrollArea className="h-[600px]">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Plante</TableHead>
-                    <TableHead>Catégorie</TableHead>
-                    <TableHead>light_requirement</TableHead>
-                    <TableHead>watering_frequency</TableHead>
-                    <TableHead>temperature_min</TableHead>
-                    <TableHead>temperature_max</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {sortedPlants.map((plant) => (
-                    <TableRow key={plant.plant_id} className="hover:bg-muted/50">
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                            <Leaf className="h-5 w-5 text-green-600" />
-                          </div>
-                          <div>
-                            <p className="font-medium">{plant.plant_name}</p>                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{plant.type}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge >{plant.light_requirement}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <span >{plant.watering_frequency}</span>
-                      </TableCell>
-                      <TableCell className="font-medium text-green-600">{plant.temperature_min}€</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span className="font-medium">{plant.temperature_max}</span>
-                        </div>
-                      </TableCell>
-                      
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setSelectedPlant(plant)
-                                setIsSheetOpen(true)
-                              }}
-                            >
-                              <Eye className="mr-2 h-4 w-4" />
-                              Voir détails
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Edit className="mr-2 h-4 w-4" />
-                              Modifier
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleDuplicatePlant(plant)}>
-                              <Copy className="mr-2 h-4 w-4" />
-                              Dupliquer
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-red-600" onClick={() => handleDeletePlant(plant)}>
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Supprimer
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </ScrollArea>
-          )}
-        </CardContent>
-      </Card>
+          </div>
+        ))}
+      </div>
+    ) : sortedPlants.length === 0 ? (
+      <div className="text-center py-12">
+        <Leaf className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Aucune plante trouvée</h3>
+        <p className="text-gray-500 mb-6">
+          {searchTerm || filterCategory !== "all"
+            ? "Essayez de modifier vos critères de recherche"
+            : "Commencez par ajouter votre première plante"}
+        </p>
+        <Button onClick={handleOpenNewPlantForm} className="bg-green-600 hover:bg-green-700">
+          <Plus className="mr-2 h-4 w-4" />
+          Ajouter une plante
+        </Button>
+      </div>
+    ) : (
+      <ScrollArea className="h-[600px]">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-gray-50">
+              <TableHead className="font-semibold text-gray-700">Plante</TableHead>
+              <TableHead className="font-semibold text-gray-700">Catégorie</TableHead>
+              <TableHead className="font-semibold text-gray-700">Lumière</TableHead>
+              <TableHead className="font-semibold text-gray-700">Arrosage</TableHead>
+              <TableHead className="font-semibold text-gray-700">Temp. Min</TableHead>
+              <TableHead className="font-semibold text-gray-700">Temp. Max</TableHead>
+              <TableHead className="text-right font-semibold text-gray-700">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {sortedPlants.map((plant, index) => (
+              <TableRow
+                key={plant.plant_id}
+                className={`hover:bg-gradient-to-r hover:from-green-50 hover:to-blue-50 transition-all duration-200 ${
+                  index % 2 === 0 ? "bg-gray-50/30" : "bg-white"
+                }`}
+              >
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <div className="relative w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center overflow-hidden">
+                      {plant.photo_url && 
+                       plant.photo_url !== "/placeholder.svg?height=200&width=200&text=" + encodeURIComponent(plant.plant_name?.substring(0, 8)) ? (
+                        <img
+  src={`http://localhost:8080${plant.photo_url}`}
+  alt={plant.plant_name}
+  className="w-10 h-10 object-cover rounded-lg"
+/>
+                      ) : (
+                        <Leaf className="h-5 w-5 text-green-600" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">{plant.plant_name}</p>
+                      <p className="text-sm text-gray-500">ID: {plant.plant_id}</p>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                    {plant.type}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm text-gray-600">{plant.light_requirement || "Non spécifié"}</span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm text-gray-600">{plant.watering_frequency || "Non spécifié"}</span>
+                </TableCell>
+                <TableCell>
+                  <span className="font-medium text-blue-600">
+                    {plant.temperature_min ? `${plant.temperature_min}°C` : "N/A"}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span className="font-medium text-red-600">
+                    {plant.temperature_max ? `${plant.temperature_max}°C` : "N/A"}
+                  </span>
+                </TableCell>
+                <TableCell className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 rounded-lg transition-all duration-200"
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-48 bg-white/95 backdrop-blur-sm border border-gray-200 shadow-lg"
+                    >
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setSelectedPlant(plant)
+                          setIsSheetOpen(true)
+                        }}
+                        className="hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 cursor-pointer"
+                      >
+                        <Eye className="mr-2 h-4 w-4 text-green-600" />
+                        <span className="text-green-700">Voir détails</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 cursor-pointer">
+                        <Edit className="mr-2 h-4 w-4 text-blue-600" />
+                        <span className="text-blue-700">Modifier</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 cursor-pointer"
+                        onClick={() => handleDeletePlant(plant)}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4 text-red-600" />
+                        <span className="text-red-700">Supprimer</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </ScrollArea>
+    )}
+  </CardContent>
+</Card>
 
-      {/* Sheet pour les détails de la plante */}
-
-      {/* Dialog de confirmation de suppression */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Cette action ne peut pas être annulée. La plante "{plantToDelete?.name}" sera définitivement supprimée de
-              votre catalogue.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
-              Supprimer
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+          {/* Dialog de confirmation de suppression */}
+          <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Cette action ne peut pas être annulée. La plante "{plantToDelete?.plant_name}" sera définitivement
+                  supprimée de votre catalogue.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+                  Supprimer
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </div>
     </div>
   )
 }

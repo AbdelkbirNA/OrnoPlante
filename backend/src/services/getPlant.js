@@ -38,11 +38,9 @@ async function getAllPlants() {
       },
     });
 
-     if (!plants || plants.length === 0) {
-      throw new Error("Aucune plante trouvée");
-    }
+     return plants;
 
-    return plants;
+    
   } catch (error) {
     console.error("Erreur getAllPlants:", error);
     throw error;
