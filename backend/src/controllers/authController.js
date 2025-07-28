@@ -104,11 +104,30 @@ function logout(req, res) {
   res.json({ message: "Déconnexion réussie" });
 }
 
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deleteduser = await prisma.user.delete({
+      where: {
+        user_id: parseInt(id),
+      },
+    });
+
+    res.status(200).json({
+      message: 'Utilisateur supprimé avec succès.',
+      user: deleteduser,
+    });
+  } catch (error) {
+    console.error('Erreur lors de la suppression :', error);
+    res.status(500).json({ error: "Erreur lors de la suppression de l'utilisateur." });
+  }
+};
 
 
 module.exports = {
   register,
   login,
   getMe,
-  logout
+  logout,deleteUser
 };

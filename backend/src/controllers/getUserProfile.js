@@ -1,4 +1,4 @@
-const { getUser } = require("../services/getUser");
+const { getUser ,getAllUsers} = require("../services/getUser");
 
 async function profilHandler(req, res) {
   try {
@@ -13,6 +13,14 @@ async function profilHandler(req, res) {
     res.status(500).json({ error: "Erreur serveur" });
   }
 }
+async function allusers(req, res) {
+  try {
+    const users = await getAllUsers();
+    res.json(users);
+  } catch (error) {
+    console.error("Erreur dans allusers :", error);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+}
 
-
-module.exports = { profilHandler };
+module.exports = { profilHandler,allusers };

@@ -27,5 +27,28 @@ async function getUser(userID) {
   }
 }
 
+async function getAllUsers() {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        user_id: true,
+        first_name: true,
+        last_name: true,
+        email: true,
+        user_type: true,
+        registration_date: true,
+        profile_picture: true, 
+      },
+    });
 
-module.exports = { getUser };
+     return users;
+
+    
+  } catch (error) {
+    console.error("Erreur getAllUsers:", error);
+    throw error;
+  }
+}
+
+
+module.exports = { getUser,getAllUsers };
