@@ -6,13 +6,8 @@ const updatroute = require("./routes/updateRoutes");
 const planteRoutes = require("./routes/planteRoutes");
 const path = require("path");
 const multer = require("multer");
+
 const app = express();
-
-
-
-
-
-
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -20,7 +15,6 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const ext = path.extname(file.originalname);
-    // Par exemple, nommer le fichier avec userId + timestamp
     cb(null, `profile_${Date.now()}${ext}`);
   },
 });
@@ -36,8 +30,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api", authRoutes); 
-app.use("/api/",profilRoute);
-app.use("/api/",updatroute);
-app.use("/api/",planteRoutes);
+app.use("/api/", profilRoute);
+app.use("/api/", updatroute);
+app.use("/api/", planteRoutes);
 
 module.exports = app;
