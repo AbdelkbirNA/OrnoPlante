@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 // pages/env-info.jsx (ou .js)
 
 export default function EnvInfo() {
