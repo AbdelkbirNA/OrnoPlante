@@ -4,8 +4,11 @@ const authRoutes = require("./routes/authRoutes");
 const profilRoute = require("./routes/profilRoute"); 
 const updatroute = require("./routes/updateRoutes"); 
 const planteRoutes = require("./routes/planteRoutes");
+const geminiRoute = require("./routes/geminiRoute");
 const path = require("path");
 const multer = require("multer");
+const plantnetRoutes = require('./routes/plantnetRoutes'); 
+// ou selon le chemin correct vers ton fichier de routes
 
 const app = express();
 
@@ -29,9 +32,12 @@ app.get("/", (req, res) => {
   res.send("hi");
 });
 
+
+app.use("/api/gemini", geminiRoute);
 app.use("/api", authRoutes); 
 app.use("/api/", profilRoute);
 app.use("/api/", updatroute);
 app.use("/api/", planteRoutes);
+app.use("/api/plantnet", plantnetRoutes);
 
 module.exports = app;
