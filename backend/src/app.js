@@ -6,6 +6,8 @@ const updatroute = require("./routes/updateRoutes");
 const planteRoutes = require("./routes/planteRoutes");
 const geminiRoute = require("./routes/geminiRoute");
 const path = require("path");
+const contactRoutes = require('./routes/contactRoutes')
+
 const multer = require("multer");
 const plantnetRoutes = require('./routes/plantnetRoutes'); 
 // ou selon le chemin correct vers ton fichier de routes
@@ -39,5 +41,6 @@ app.use("/api/", profilRoute);
 app.use("/api/", updatroute);
 app.use("/api/", planteRoutes);
 app.use("/api/plantnet", plantnetRoutes);
+app.use('/api', contactRoutes)
 
 module.exports = app;
