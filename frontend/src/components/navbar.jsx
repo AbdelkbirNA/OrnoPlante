@@ -129,8 +129,13 @@ export default function Navbar() {
                   >
                     <div className="relative">
                       <Avatar className="h-8 w-8 ring-1 ring-white/30 shadow-md">
-                        <AvatarImage src={`${process.env.NEXT_PUBLIC_API}{user.profile_picture}`} alt="Photo de profil" />
-                      </Avatar>
+                        <AvatarImage src={`${process.env.NEXT_PUBLIC_API}${user.profile_picture}`} alt="Photo de profil" />
+                      <AvatarFallback className="text-2xl bg-gradient-to-br from-green-400 to-blue-400 text-white">
+                  {user.first_name?.[0]}
+                  {user.last_name?.[0]}
+                </AvatarFallback>
+                </Avatar>
+                      
                     </div>
                     <div className="flex flex-col w-20 items-start">
                       <span className="font-semibold text-gray-900 group-hover:text-green-800 transition-colors">
@@ -152,9 +157,10 @@ export default function Navbar() {
                     <div className="flex items-center space-x-3">
                       <Avatar className="h-10 w-10">
                         <AvatarImage src={`${process.env.NEXT_PUBLIC_API}${user.profile_picture}`} alt="Photo de profil" />
-                        <AvatarFallback className="bg-gradient-to-br from-green-500 to-green-600 text-white">
-                          {(user.first_name ?? user.name ?? "U")?.charAt(0)?.toUpperCase()}
-                        </AvatarFallback>
+                        <AvatarFallback className="text-2xl bg-gradient-to-br from-green-400 to-blue-400 text-white">
+                  {user.first_name?.[0]}
+                  {user.last_name?.[0]}
+                </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
                         <span className="font-semibold text-gray-900">

@@ -198,7 +198,7 @@ export default function HomePage() {
               À propos de OrnoPlante
             </h2>
             <p className="text-gray-600 md:text-lg">
-              OrnoPlante,jhhh c’est bien plus qu’une simple pépinière.
+              OrnoPlante,c’est bien plus qu’une simple pépinière.
               C’est une communauté de passionnés, un espace d’innovation où la nature s’allie à la technologie. Nous nous engageons à vous offrir les meilleures solutions pour que vos plantes s’épanouissent et embellissent votre quotidien.
             </p>
             <Link href="/about">

@@ -22,6 +22,7 @@ model User {
   chatbot_questions    ChatbotQuestion[]
   visit_statistics     VisitStatistic[]
   admin_actions        AdminAction[]       @relation("AdminActions")
+  contact_messages ContactMessage[]
 }
 
 model Plant {
@@ -93,4 +94,20 @@ model AdminAction {
   action_date          DateTime            @default(now())
 
   admin                User?               @relation("AdminActions", fields: [admin_id], references: [user_id])
+}
+model ContactMessage {
+  message_id     Int       @id @default(autoincrement())
+  user_id        Int? 
+  contact_type   String
+  name           String
+  email          String
+  phone          String?
+  company        String?
+  subject        String
+  message        String
+  newsletter     Boolean   @default(false)
+  is_read        Boolean   @default(false)
+  created_at     DateTime  @default(now())
+
+  user           User?     @relation(fields: [user_id], references: [user_id])
 }

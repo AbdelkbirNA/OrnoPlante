@@ -90,17 +90,17 @@ const contactMethods = [
   {
     icon: Phone,
     title: "Téléphone",
-    value: "+212 6XX XX XX XX",
+    value: "+212 695432671",
     description: "Lun-Sam: 9h-18h",
-    action: "tel:+212600000000",
+    action: "tel:+212695432671",
     color: "bg-green-500",
   },
   {
     icon: WhatsApp,
     title: "WhatsApp",
-    value: "+212 6XX XX XX XX",
+    value: "+212 695432671",
     description: "Réponse rapide 24h/7j",
-    action: "https://wa.me/212600000000",
+    action: "https://wa.me/212695432671",
     color: "bg-green-600",
   },
   {
@@ -108,7 +108,7 @@ const contactMethods = [
     title: "Email",
     value: "contact@ornoplante.ma",
     description: "Réponse sous 24h",
-    action: "mailto:contact@ornoplante.ma",
+    action: "mailto:ornoplante@gmail.com",
     color: "bg-blue-500",
   },
   {
@@ -521,147 +521,7 @@ export default function ContactPage() {
         </main>
 
         {/* Sidebar avec informations */}
-        <aside className="w-96 bg-white border-l border-gray-200 overflow-y-auto">
-          <div className="p-8 space-y-10">
-            {/* Informations de contact */}
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-green-600" />
-                Informations pratiques
-              </h3>
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <MapPin className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Adresse</h4>
-                    <p className="text-gray-600 text-sm">
-                      Pépinière OrnoPlante
-                      <br />
-                      Route de Chtouka
-                      <br />
-                      Agadir, Maroc
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Clock className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Horaires</h4>
-                    <p className="text-gray-600 text-sm">
-                      Lundi - Samedi: 9h - 18h
-                      <br />
-                      Dimanche: Fermé
-                      <br />
-                      Jours fériés: Fermé
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <Phone className="h-5 w-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Contact direct</h4>
-                    <p className="text-gray-600 text-sm">
-                      Tél: +212 6XX XX XX XX
-                      <br />
-                      Email: contact@ornoplante.ma
-                      <br />
-                      WhatsApp disponible
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Réseaux sociaux */}
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Suivez-nous</h3>
-              <div className="grid grid-cols-2 gap-4">
-                {socialNetworks.map((social, index) => {
-                  const IconComponent = social.icon
-                  return (
-                    <Link
-                      key={index}
-                      href={social.url}
-                      className={`${social.color} text-white p-4 rounded-xl hover:opacity-90 transition-opacity duration-200 flex items-center gap-3`}
-                    >
-                      <IconComponent className="h-5 w-5" />
-                      <span className="font-medium text-sm">{social.name}</span>
-                    </Link>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Témoignages */}
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <Star className="h-5 w-5 text-yellow-500" />
-                Témoignages clients
-              </h3>
-              <div className="space-y-6">
-                {testimonials.map((testimonial, index) => (
-                  <div key={index} className="bg-gray-50 rounded-xl p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      <Image
-                        src={testimonial.avatar || "/placeholder.svg?height=40&width=40"}
-                        alt={testimonial.name}
-                        width={40}
-                        height={40}
-                        className="rounded-full"
-                      />
-                      <div>
-                        <h4 className="font-semibold text-gray-900 text-sm">{testimonial.name}</h4>
-                        <p className="text-gray-500 text-xs">{testimonial.role}</p>
-                      </div>
-                      <div className="ml-auto flex">
-                        {[...Array(testimonial.rating)].map((_, i) => (
-                          <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        ))}
-                      </div>
-                    </div>
-                    <p className="text-gray-700 text-sm italic">"{testimonial.content}"</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Urgence */}
-            <div className="bg-red-50 border border-red-200 rounded-xl p-6">
-              <h3 className="text-lg font-bold text-red-900 mb-3 flex items-center gap-2">
-                <Zap className="h-5 w-5" />
-                Urgence ?
-              </h3>
-              <p className="text-red-700 text-sm mb-4">
-                Pour les urgences botaniques (plantes malades, conseils immédiats), contactez-nous directement :
-              </p>
-              <div className="space-y-2">
-                <Link href="tel:+212600000000">
-                  <Button className="w-full bg-red-600 hover:bg-red-700 text-sm">
-                    <Phone className="h-4 w-4 mr-2" />
-                    Appeler maintenant
-                  </Button>
-                </Link>
-                <Link href="/ai-assistant">
-                  <Button
-                    variant="outline"
-                    className="w-full border-red-300 text-red-700 hover:bg-red-50 bg-transparent text-sm"
-                  >
-                    <Bot className="h-4 w-4 mr-2" />
-                    Assistant IA 24h/24
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </aside>
+        
       </div>
 
       {/* FAQ Section */}
@@ -738,9 +598,9 @@ export default function ContactPage() {
                       <p className="text-gray-700">
                         Pépinière OrnoPlante
                         <br />
-                        Route de Chtouka, Km 15
+                        Route de Chtouka,15 Km 
                         <br />
-                        80000 Agadir, Maroc
+                        24000 Chtouka, Maroc
                       </p>
                     </div>
                   </div>
@@ -751,7 +611,7 @@ export default function ContactPage() {
                       <p className="text-gray-700">
                         Lundi - Vendredi: 9h00 - 18h00
                         <br />
-                        Samedi: 9h00 - 17h00
+                        Samedi: 9h00 - 13h00
                         <br />
                         Dimanche: Fermé
                       </p>
@@ -780,7 +640,7 @@ export default function ContactPage() {
                     Ouvrir dans Maps
                   </Button>
                 </Link>
-                <Link href="tel:+212600000000">
+                <Link href="tel:+212695432671">
                   <Button
                     variant="outline"
                     className="border-green-300 text-green-700 hover:bg-green-50 bg-transparent py-4 px-6"
