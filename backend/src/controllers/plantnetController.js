@@ -29,7 +29,18 @@ const identifyPlant = async (req, res) => {
     }
 
     const data = await response.json();
-    res.json(data);
+    let result = { plantName: null, score: null };
+
+    if (data.results && data.results.length > 0) {
+      const best = data.results[0];
+      result.plantName = best.species.scientificName || null;
+      result.score = best.score || null;
+    } else if (data.bestMatch) {
+      result.plantName = data.bestMatch;
+    }
+
+    // Retourner uniquement ce résultat simplifié
+    res.json(result);
   } catch (error) {
     console.error("PlantNet API error:", error);
     res.status(500).json({ error: "Failed to identify plant" });

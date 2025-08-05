@@ -37,3 +37,18 @@ exports.createContactMessage = async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' })
   }
 }
+exports.getAllContactMessages = async (req, res) => {
+  try {
+    const messages = await prisma.contactMessage.findMany({
+      orderBy: {
+        created_at: 'desc', // pour afficher les plus récents en premier
+      },
+    });
+
+res.status(200).json(messages); // ✅ tu renvoies un tableau directement
+  } catch (error) {
+    console.error('Erreur lors de la récupération des messages:', error);
+    res.status(500).json({ error: 'Erreur serveur lors de la récupération des messages' });
+  }
+};
+

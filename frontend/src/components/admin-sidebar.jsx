@@ -33,6 +33,11 @@ const menuItems = [
     route: "users",
   },
   {
+    title: "Gestion des message",
+    icon: User,
+    route: "messages",
+  },
+  {
     title: "FAQ & Questions",
     icon: HelpCircle,
     route: "faq",

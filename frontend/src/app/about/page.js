@@ -73,7 +73,7 @@ export default function AboutPage() {
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/discover">
+                <Link href="/plants">
                   <Button className="inline-flex h-12 items-center justify-center rounded-2xl bg-green-600 px-6 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:bg-green-700 hover:shadow-xl hover:scale-105">
                     <Leaf className="mr-2 h-5 w-5" />
                     Nos plantes
