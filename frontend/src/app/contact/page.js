@@ -203,29 +203,43 @@ export default function ContactPage() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    // Simulation d'envoi
+  try {
+    const response = await fetch("http://localhost:8080/api/contact", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Erreur lors de l'envoi du message");
+    }
+
+    setIsSubmitted(true);
+    // Reset form after 3 seconds
     setTimeout(() => {
-      setIsSubmitting(false)
-      setIsSubmitted(true)
-      // Reset form after 3 seconds
-      setTimeout(() => {
-        setIsSubmitted(false)
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          company: "",
-          contactType: "conseil",
-          subject: "",
-          message: "",
-          newsletter: false,
-        })
-      }, 3000)
-    }, 2000)
+      setIsSubmitted(false);
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        company: "",
+        contactType: "conseil",
+        subject: "",
+        message: "",
+        newsletter: false,
+      });
+    }, 3000);
+  } catch (error) {
+    alert(error.message);
+  } finally {
+    setIsSubmitting(false);
   }
+};
 
   const toggleFaq = (index) => {
     setExpandedFaq(expandedFaq === index ? null : index)

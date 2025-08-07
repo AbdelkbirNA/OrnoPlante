@@ -5,148 +5,50 @@ import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Send, Mic, Camera, Bot, User, X, Copy, BookOpen, Clock, Zap } from "lucide-react"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import {
+  Send,
+  Camera,
+  Bot,
+  User,
+  X,
+  Copy,
+  Leaf,
+  Upload,
+  MessageCircle,
+  Search,
+  Sparkles,
+  Info,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react"
 
-// Fonctionnalités de l'IA
-const aiFeatures = [
-  {
-    icon: Camera,
-    title: "Reconnaissance visuelle",
-    description: "Identifiez vos plantes en photo",
-    color: "bg-blue-500",
-  },
-  {
-    icon: Zap,
-    title: "Diagnostic instantané",
-    description: "Analysez les problèmes de santé",
-    color: "bg-red-500",
-  },
-  {
-    icon: BookOpen,
-    title: "Guide personnalisé",
-    description: "Conseils adaptés à votre situation",
-    color: "bg-green-500",
-  },
-  {
-    icon: Clock,
-    title: "Planning d'entretien",
-    description: "Calendrier sur mesure",
-    color: "bg-purple-500",
-  },
-]
-
-export default function SimpleAIChat() {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      type: "ai",
-      content: "Bonjour ! Je suis votre assistant botanique IA. Comment puis-je vous aider aujourd'hui ?",
-      timestamp: new Date(),
-    },
-  ])
-  const [inputMessage, setInputMessage] = useState("")
-  const [isTyping, setIsTyping] = useState(false)
-  const [isListening, setIsListening] = useState(false)
+export default function PlantDetectionAI() {
   const [selectedImage, setSelectedImage] = useState(null)
-  const messagesEndRef = useRef(null)
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [conversation, setConversation] = useState([])
+  const [plantInfo, setPlantInfo] = useState(null)
+  const [activeTab, setActiveTab] = useState("detection") // "detection" ou "gemini"
+  const [geminiInput, setGeminiInput] = useState("")
+  const [geminiConversation, setGeminiConversation] = useState([])
+  const [isGeminiLoading, setIsGeminiLoading] = useState(false)
   const fileInputRef = useRef(null)
+  const messagesEndRef = useRef(null)
+  const geminiMessagesEndRef = useRef(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
 
   useEffect(() => {
-    // Ne pas scroller si un message est en cours de streaming
-    const hasStreamingMessage = messages.some((msg) => msg.isStreaming)
-    if (!hasStreamingMessage) {
-      scrollToBottom()
-    }
-  }, [messages])
+    scrollToBottom()
+  }, [conversation])
 
-  const handleSendMessage = async (messageText = inputMessage) => {
-    if (!messageText.trim() && !selectedImage) return
-
-    const newMessage = {
-      id: Date.now(),
-      type: "user",
-      content: messageText,
-      image: selectedImage,
-      timestamp: new Date(),
-    }
-
-    setMessages((prev) => [...prev, newMessage])
-    setInputMessage("")
-    setSelectedImage(null)
-    setIsTyping(true)
-
-    // Créer un message AI vide pour le streaming
-    const aiMessageId = Date.now() + 1
-    const aiMessage = {
-      id: aiMessageId,
-      type: "ai",
-      content: "",
-      timestamp: new Date(),
-      isStreaming: true,
-    }
-
-    setMessages((prev) => [...prev, aiMessage])
-    setIsTyping(false)
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API}/api/gemini/generate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: messageText,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Erreur lors de la génération de la réponse")
-      }
-
-      const data = await response.json()
-      const fullResponse = data.response || "Désolé, je n'ai pas pu générer une réponse."
-
-      // Simuler le streaming mot par mot
-      await streamText(fullResponse, aiMessageId)
-    } catch (error) {
-      console.error("Erreur:", error)
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === aiMessageId
-            ? { ...msg, content: "Désolé, une erreur s'est produite. Veuillez réessayer.", isStreaming: false }
-            : msg,
-        ),
-      )
-    }
-  }
-
-  // Fonction pour simuler le streaming de texte
-  const streamText = async (text, messageId) => {
-    const words = text.split(" ")
-    let currentText = ""
-
-    for (let i = 0; i < words.length; i++) {
-      currentText += (i > 0 ? " " : "") + words[i]
-
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === messageId ? { ...msg, content: currentText, isStreaming: i < words.length - 1 } : msg,
-        ),
-      )
-
-      // Délai entre chaque mot (ajustable)
-      await new Promise((resolve) => setTimeout(resolve, 50))
-    }
-
-    // Scroll seulement à la fin du streaming
-    setTimeout(() => {
-      scrollToBottom()
-    }, 100)
-  }
+  useEffect(() => {
+    geminiMessagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [geminiConversation])
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0]
@@ -159,172 +61,442 @@ export default function SimpleAIChat() {
     }
   }
 
-  const startVoiceRecording = () => {
-    setIsListening(true)
-    // Simulation de reconnaissance vocale
-    setTimeout(() => {
-      setIsListening(false)
-      setInputMessage("Ma plante a des feuilles qui jaunissent, que faire ?")
-    }, 3000)
+
+
+  const handleAnalyze = async () => {
+    if (!selectedImage) return
+
+    const newMessage = {
+      id: Date.now(),
+      type: "user",
+      content: "Analyse de plante demandée",
+      image: selectedImage,
+      timestamp: new Date(),
+    }
+
+    setConversation([...(conversation || []), newMessage])
+    const currentImage = selectedImage
+    setSelectedImage(null)
+    setIsAnalyzing(true)
+
+    try {
+      // Appel à votre API backend
+      const formData = new FormData()
+
+      // Convertir base64 en blob pour l'upload
+      const response = await fetch(currentImage)
+      const blob = await response.blob()
+      formData.append("image", blob, "plant-identification.jpg")
+      formData.append("type", "leaf")
+
+      const apiResponse = await fetch("http://localhost:8080/api/plantnet/identify", {
+        method: "POST",
+        body: formData,
+      }).catch(error => {
+        console.error("Erreur de connexion:", error)
+        throw new Error(`Erreur de connexion au serveur: ${error.message}`)
+      })
+
+      if (!apiResponse.ok) {
+        const errorText = await apiResponse.text()
+        console.error("Réponse d'erreur du serveur:", errorText)
+        throw new Error(`Erreur API: ${apiResponse.status} - ${errorText}`)
+      }
+
+      const data = await apiResponse.json()
+      console.log("Données reçues de l'API:", data)
+
+             // Traitement de la réponse de votre API
+       const aiResponse = {
+         id: Date.now() + 1,
+         type: "ai",
+         content: `**🌿 Plante identifiée !**
+
+**Nom scientifique:** ${data.plantName || "Non identifié"}
+**Score de confiance:** ${data.score ? Math.round(data.score * 100) : 0}%`,
+         timestamp: new Date(),
+         confidence: data.score ? Math.round(data.score * 100) : 0,
+         plantName: data.plantName || "Plante non identifiée",
+         plantData: data
+       }
+
+      setConversation((prev) => [...prev, aiResponse])
+      setPlantInfo(data)
+    } catch (error) {
+      console.error("Erreur lors de l'analyse:", error)
+
+             const errorResponse = {
+         id: Date.now() + 1,
+         type: "ai",
+         content: `**❌ Impossible d'identifier la plante**
+
+**Erreur:** ${error.message}`,
+         timestamp: new Date(),
+         confidence: 0,
+         plantName: "Identification échouée",
+       }
+
+      setConversation((prev) => [...prev, errorResponse])
+    } finally {
+      setIsAnalyzing(false)
+    }
   }
 
+  const handleGeminiMessage = async () => {
+    if (!geminiInput.trim()) return
+
+    const userMessage = {
+      id: Date.now(),
+      type: "user",
+      content: geminiInput,
+      timestamp: new Date(),
+    }
+
+    setGeminiConversation(prev => [...prev, userMessage])
+    setGeminiInput("")
+    setIsGeminiLoading(true)
+
+    try {
+             // Appel à l'API Gemini
+       const response = await fetch("http://localhost:8080/api/gemini/generate", {
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+         },
+         body: JSON.stringify({
+           text: geminiInput
+         }),
+       })
+
+      if (!response.ok) {
+        throw new Error(`Erreur API: ${response.status}`)
+      }
+
+      const data = await response.json()
+      
+             const aiMessage = {
+         id: Date.now() + 1,
+         type: "ai",
+         content: data.response || "Désolé, OrnoAI n'a pas pu traiter votre demande.",
+         timestamp: new Date(),
+       }
+
+      setGeminiConversation(prev => [...prev, aiMessage])
+    } catch (error) {
+      console.error("Erreur Gemini:", error)
+      
+             const errorMessage = {
+         id: Date.now() + 1,
+         type: "ai",
+         content: `**❌ Erreur de communication**
+
+Désolé, OrnoAI n'a pas pu traiter votre demande pour le moment.
+
+**Causes possibles :**
+- Problème de connexion au service IA
+- Erreur technique temporaire
+- Service indisponible
+
+**Suggestions :**
+- Vérifiez votre connexion internet
+- Réessayez dans quelques instants
+- Reformulez votre question
+
+**Erreur technique:** ${error.message}`,
+         timestamp: new Date(),
+       }
+
+      setGeminiConversation(prev => [...prev, errorMessage])
+    } finally {
+      setIsGeminiLoading(false)
+    }
+  }
+
+  const quickTips = [
+    "Prenez la photo en pleine lumière",
+    "Montrez les feuilles clairement",
+    "Évitez les ombres importantes",
+    "Incluez la forme générale de la plante"
+  ]
+
+  const geminiSuggestions = [
+    "Comment arroser mes plantes d'intérieur ?",
+    "Quels sont les signes d'une plante malade ?",
+    "Comment rempoter une plante ?",
+    "Quelles plantes pour débutants ?",
+    "Comment faire des boutures ?",
+    "Quels engrais utiliser ?"
+  ]
+
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
-      {/* Hero Section */}
-      <section className="relative w-full py-16 bg-gradient-to-br from-green-600 via-emerald-600 to-green-700 text-white overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full opacity-10 animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-24 h-24 bg-white rounded-full opacity-15 animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 w-40 h-40 bg-white rounded-full opacity-5 animate-pulse delay-500"></div>
-        </div>
-        <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10">
-          <div className="text-center space-y-8">
-            <div className="inline-flex items-center gap-3 bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 text-base font-medium">
-              <Bot className="h-6 w-6" />
-              Assistant IA Botanique
-            </div>
-            <div className="space-y-6">
-              <h1 className="text-5xl md:text-7xl font-black leading-tight">
-                Votre expert
-                <span className="block text-emerald-200">en plantes IA</span>
-              </h1>
-              <p className="text-xl text-green-100 max-w-3xl mx-auto leading-relaxed">
-                Obtenez des conseils personnalisés, identifiez vos plantes et résolvez tous vos problèmes botaniques
-                avec notre intelligence artificielle avancée
-              </p>
-            </div>
-            {/* Fonctionnalités principales */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-              {aiFeatures.map((feature, index) => {
-                const IconComponent = feature.icon
-                return (
-                  <div
-                    key={index}
-                    className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center hover:bg-white/20 transition-all duration-300"
-                  >
-                    <div
-                      className={`w-12 h-12 ${feature.color} rounded-xl flex items-center justify-center mx-auto mb-3`}
-                    >
-                      <IconComponent className="h-6 w-6 text-white" />
-                    </div>
-                    <h3 className="font-semibold mb-2">{feature.title}</h3>
-                    <p className="text-sm text-green-100">{feature.description}</p>
-                  </div>
-                )
-              })}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-50">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                <Leaf className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">PlantAI Detection</h1>
+                <p className="text-sm text-gray-600">Identifiez vos plantes en un clic</p>
+              </div>
             </div>
           </div>
         </div>
-      </section>
+      </header>
 
-      {/* Zone de chat principale */}
-      <main className="flex-1 flex flex-col max-w-4xl mx-auto w-full">
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {messages.map((message) => (
-            <MessageBubble key={message.id} message={message} />
-          ))}
-          {isTyping && (
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                <Bot className="h-5 w-5 text-white" />
-              </div>
-              <div className="bg-white rounded-2xl p-4 shadow-lg max-w-md">
-                <div className="flex items-center gap-2">
-                  <div className="flex gap-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce delay-100"></div>
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce delay-200"></div>
-                  </div>
-                  <span className="text-sm text-gray-500">L'IA réfléchit...</span>
+             {/* Contenu principal */}
+       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+         {/* Onglets */}
+         <div className="flex justify-center mb-8">
+           <div className="bg-white rounded-xl p-1 shadow-lg border border-gray-200">
+             <button
+               onClick={() => setActiveTab("detection")}
+               className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+                 activeTab === "detection"
+                   ? "bg-green-500 text-white shadow-md"
+                   : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+               }`}
+             >
+               <div className="flex items-center gap-2">
+                 <Search className="h-4 w-4" />
+                 Identification Plantes
+               </div>
+             </button>
+             <button
+               onClick={() => setActiveTab("gemini")}
+               className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+                 activeTab === "gemini"
+                   ? "bg-green-500 text-white shadow-md"
+                   : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+               }`}
+             >
+                               <div className="flex items-center gap-2">
+                  <Bot className="h-4 w-4" />
+                  Assistant OrnoAI
                 </div>
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+             </button>
+           </div>
+         </div>
 
-        {/* Zone de saisie */}
-        <div className="border-t border-gray-200 bg-white p-6">
-          {selectedImage && (
-            <div className="mb-4 relative inline-block">
-              <Image
-                src={selectedImage || "/placeholder.svg"}
-                alt="Image sélectionnée"
-                width={100}
-                height={100}
-                className="rounded-lg object-cover"
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelectedImage(null)}
-                className="absolute -top-2 -right-2 w-6 h-6 p-0 bg-red-500 text-white rounded-full hover:bg-red-600"
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </div>
-          )}
-          <div className="flex items-end gap-4">
-            <div className="flex-1 relative">
-              <Input
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                placeholder="Posez votre question sur les plantes..."
-                className="pr-32 py-4 rounded-2xl border-2 border-gray-300 focus:border-green-500 focus:ring-green-500"
-                onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-              />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2">
+         {activeTab === "detection" ? (
+           <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+             {/* Panneau de contrôle - 1/4 de la largeur */}
+             <div className="xl:col-span-1">
+               <Card className="sticky top-24 shadow-lg border-0">
+                 <CardHeader className="text-center pb-4">
+                   <div className="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                     <Leaf className="h-8 w-8 text-white" />
+                   </div>
+                   <CardTitle className="text-green-700 text-lg">Identification Plantes</CardTitle>
+                   <CardDescription className="text-sm">Identifiez vos plantes en un clic</CardDescription>
+                 </CardHeader>
+
+              <CardContent className="space-y-6">
+                {/* Zone d'upload */}
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-gray-700 block">Photo de la plante</label>
+                  {selectedImage ? (
+                    <div className="relative group">
+                      <Image
+                        src={selectedImage}
+                        alt="Plante à identifier"
+                        width={300}
+                        height={200}
+                        className="w-full h-40 object-cover rounded-xl border-2 border-green-200"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedImage(null)}
+                        className="absolute top-2 right-2 w-8 h-8 p-0 bg-red-500 text-white rounded-full hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className="border-2 border-dashed border-green-300 rounded-xl p-6 text-center cursor-pointer hover:border-green-400 hover:bg-green-50/50 transition-all duration-200"
+                    >
+                      <Upload className="h-12 w-12 text-green-400 mx-auto mb-3" />
+                      <p className="text-sm text-gray-600 mb-1">Cliquez pour ajouter</p>
+                      <p className="text-xs text-gray-500">Photo claire recommandée</p>
+                    </div>
+                  )}
+                  <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                </div>
+
+                {/* Conseils */}
+                <div className="bg-green-50 p-4 rounded-xl border border-green-200">
+                  <h4 className="font-medium text-green-800 mb-2 flex items-center gap-2">
+                    <Info className="h-4 w-4" />
+                    Conseils photo
+                  </h4>
+                  <ul className="text-sm text-green-700 space-y-1">
+                    {quickTips.map((tip, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <CheckCircle className="h-3 w-3 text-green-600 mt-0.5 flex-shrink-0" />
+                        {tip}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Bouton d'analyse */}
                 <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-8 h-8 p-0 hover:bg-blue-100"
+                  onClick={handleAnalyze}
+                  disabled={!selectedImage || isAnalyzing}
+                  className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-medium"
                 >
-                  <Camera className="h-4 w-4 text-blue-600" />
+                  {isAnalyzing ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Analyse en cours...
+                    </>
+                  ) : (
+                    <>
+                      <Search className="h-4 w-4 mr-2" />
+                      Identifier la plante
+                    </>
+                  )}
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={startVoiceRecording}
-                  className={`w-8 h-8 p-0 hover:bg-red-100 ${isListening ? "bg-red-100" : ""}`}
-                >
-                  <Mic className={`h-4 w-4 ${isListening ? "text-red-600 animate-pulse" : "text-red-600"}`} />
-                </Button>
-              </div>
-            </div>
-            <Button
-              onClick={() => handleSendMessage()}
-              disabled={!inputMessage.trim() && !selectedImage}
-              className="bg-green-600 hover:bg-green-700 px-6 py-4 rounded-2xl"
-            >
-              <Send className="h-5 w-5" />
-            </Button>
+              </CardContent>
+            </Card>
           </div>
-          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-          {/* Mode d'écoute */}
-          {isListening && (
-            <div className="mt-4 p-4 bg-red-50 rounded-xl border border-red-200">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                <span className="text-sm text-red-700 font-medium">Écoute en cours...</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsListening(false)}
-                  className="ml-auto text-red-600 hover:text-red-700"
-                >
-                  Arrêter
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-      </main>
-    </div>
-  )
+
+                     {/* Zone de conversation - 3/4 de la largeur */}
+           <div className="xl:col-span-3">
+             <Card className="min-h-[700px] max-h-[800px] flex flex-col shadow-lg border-0">
+                               <CardHeader className="border-b border-gray-100 pb-4">
+                  <CardTitle className="flex items-center gap-3 text-lg">
+                    <MessageCircle className="h-5 w-5 text-green-500" />
+                    Chat de Détection
+                    {Array.isArray(conversation) && conversation.length > 0 && (
+                      <Badge variant="secondary" className="ml-auto">
+                        {conversation.length} analyse{conversation.length > 1 ? "s" : ""}
+                      </Badge>
+                    )}
+                  </CardTitle>
+                </CardHeader>
+
+                               <CardContent className="flex-1 overflow-y-auto p-6 space-y-4 max-h-[600px]">
+                 {!Array.isArray(conversation) || conversation.length === 0 ? (
+                   <div className="flex flex-col items-center justify-center h-full text-center">
+                     <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                       <Leaf className="h-10 w-10 text-green-400" />
+                     </div>
+                                           <h3 className="text-lg font-medium text-gray-900 mb-2">Aucune analyse effectuée</h3>
+                      <p className="text-gray-500 max-w-md">
+                        Uploadez une photo claire de votre plante pour commencer l'analyse et découvrir ses caractéristiques
+                      </p>
+                   </div>
+                 ) : (
+                   <div className="space-y-6">
+                     {Array.isArray(conversation) && conversation.map((message) => (
+                       <MessageBubble key={message.id} message={message} />
+                     ))}
+                     <div ref={messagesEndRef} />
+                   </div>
+                 )}
+               </CardContent>
+             </Card>
+           </div>
+         </div>
+       ) : (
+         /* Section Gemini */
+         <div className="max-w-4xl mx-auto">
+                       <Card className="min-h-[700px] max-h-[800px] flex flex-col shadow-lg border-0">
+             <CardHeader className="border-b border-gray-100 pb-4">
+                               <CardTitle className="flex items-center gap-3 text-lg">
+                  <Bot className="h-5 w-5 text-green-500" />
+                  Assistant OrnoAI
+                  <Badge variant="outline" className="ml-auto">
+                    Expert Botanique
+                  </Badge>
+                </CardTitle>
+               <CardDescription>
+                 Posez vos questions sur les plantes, l'entretien, les maladies, et recevez des conseils personnalisés
+               </CardDescription>
+             </CardHeader>
+
+             <CardContent className="flex-1 flex flex-col p-0">
+               {/* Zone de conversation */}
+                               <div className="flex-1 overflow-y-auto p-6 space-y-4 max-h-[600px]">
+                 {geminiConversation.length === 0 ? (
+                   <div className="flex flex-col items-center justify-center h-full text-center">
+                     <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                       <Bot className="h-10 w-10 text-green-400" />
+                     </div>
+                                           <h3 className="text-lg font-medium text-gray-900 mb-2">Assistant OrnoAI</h3>
+                      <p className="text-gray-500 max-w-md mb-6">
+                        Je suis votre expert en botanique et jardinage. Posez-moi vos questions !
+                      </p>
+                     
+                     {/* Suggestions de questions */}
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl">
+                       {geminiSuggestions.map((suggestion, index) => (
+                         <button
+                           key={index}
+                           onClick={() => setGeminiInput(suggestion)}
+                           className="p-3 text-left bg-green-50 hover:bg-green-100 rounded-lg border border-green-200 transition-colors text-sm"
+                         >
+                           {suggestion}
+                         </button>
+                       ))}
+                     </div>
+                   </div>
+                 ) : (
+                   <div className="space-y-6">
+                     {geminiConversation.map((message) => (
+                       <MessageBubble key={message.id} message={message} />
+                     ))}
+                     <div ref={geminiMessagesEndRef} />
+                   </div>
+                 )}
+               </div>
+
+               {/* Zone de saisie */}
+               <div className="border-t border-gray-100 p-4">
+                 <div className="flex gap-3">
+                   <Textarea
+                     value={geminiInput}
+                     onChange={(e) => setGeminiInput(e.target.value)}
+                     placeholder="Posez votre question sur les plantes..."
+                     className="flex-1 resize-none"
+                     rows={2}
+                     onKeyDown={(e) => {
+                       if (e.key === "Enter" && !e.shiftKey) {
+                         e.preventDefault()
+                         handleGeminiMessage()
+                       }
+                     }}
+                   />
+                   <Button
+                     onClick={handleGeminiMessage}
+                     disabled={!geminiInput.trim() || isGeminiLoading}
+                     className="px-6 bg-green-500 hover:bg-green-600"
+                   >
+                     {isGeminiLoading ? (
+                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                     ) : (
+                       <Send className="h-4 w-4" />
+                     )}
+                   </Button>
+                 </div>
+               </div>
+             </CardContent>
+           </Card>
+         </div>
+       )}
+     </main>
+   </div>
+ )
 }
 
+// Composant de bulle de message
 function MessageBubble({ message }) {
   const formatTime = (date) => {
     return date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
@@ -334,24 +506,23 @@ function MessageBubble({ message }) {
     navigator.clipboard.writeText(message.content)
   }
 
-  // Fonction pour formater le texte en paragraphes
   const formatText = (text) => {
     if (!text) return ""
-
-    // Diviser le texte en paragraphes basés sur les sauts de ligne doubles
+    
+    // Diviser par paragraphes
     const paragraphs = text.split("\n\n").filter((p) => p.trim())
-
+    
     return paragraphs.map((paragraph, index) => {
-      // Traiter les listes à puces
-      if (paragraph.includes("- ") || paragraph.includes("• ")) {
-        const items = paragraph.split(/\n?[-•]\s+/).filter((item) => item.trim())
+      // Si le paragraphe contient des listes à puces
+      if (paragraph.includes("- ")) {
+        const items = paragraph.split(/\n?-\s+/).filter((item) => item.trim())
         return (
           <div key={index} className="mb-4">
-            {items[0] && <p className="mb-2">{formatTextWithBold(items[0])}</p>}
+            {items[0] && <p className="mb-3 font-medium">{formatTextWithBold(items[0])}</p>}
             {items.length > 1 && (
-              <ul className="list-disc list-inside space-y-1 ml-4">
+              <ul className="list-disc list-inside space-y-2 ml-4">
                 {items.slice(1).map((item, itemIndex) => (
-                  <li key={itemIndex} className="text-gray-700">
+                  <li key={itemIndex} className="text-gray-700 leading-relaxed">
                     {formatTextWithBold(item)}
                   </li>
                 ))}
@@ -360,7 +531,17 @@ function MessageBubble({ message }) {
           </div>
         )
       }
-
+      
+      // Si le paragraphe contient des titres avec ###
+      if (paragraph.startsWith("### ")) {
+        const title = paragraph.replace("### ", "")
+        return (
+          <h3 key={index} className="text-lg font-semibold text-gray-900 mb-3 mt-4">
+            {formatTextWithBold(title)}
+          </h3>
+        )
+      }
+      
       // Paragraphe normal
       return (
         <p key={index} className="mb-4 last:mb-0 leading-relaxed">
@@ -370,15 +551,13 @@ function MessageBubble({ message }) {
     })
   }
 
-  // Fonction pour convertir **texte** en gras
   const formatTextWithBold = (text) => {
     const parts = text.split(/(\*\*.*?\*\*)/g)
-
     return parts.map((part, index) => {
       if (part.startsWith("**") && part.endsWith("**")) {
-        const boldText = part.slice(2, -2) // Enlever les **
+        const boldText = part.slice(2, -2)
         return (
-          <strong key={index} className="font-bold">
+          <strong key={index} className="font-semibold text-gray-900">
             {boldText}
           </strong>
         )
@@ -390,27 +569,32 @@ function MessageBubble({ message }) {
   if (message.type === "user") {
     return (
       <div className="flex items-start gap-4 justify-end">
-        <div className="bg-green-600 text-white rounded-2xl p-4 shadow-lg max-w-md">
+        <div className="bg-green-600 text-white rounded-2xl p-4 shadow-lg max-w-lg">
           {message.image && (
-            <Image
-              src={message.image || "/placeholder.svg"}
-              alt="Image envoyée"
-              width={200}
-              height={150}
-              className="rounded-lg mb-3 object-cover"
-            />
+            <div className="mb-3">
+              <Image
+                src={message.image}
+                alt="Image envoyée"
+                width={200}
+                height={150}
+                className="rounded-xl object-cover w-full"
+              />
+            </div>
           )}
           <div className="text-sm leading-relaxed">{formatText(message.content)}</div>
-          <div className="flex items-center justify-between mt-3 pt-2 border-t border-green-500">
-            <span className="text-xs text-green-100">{formatTime(message.timestamp)}</span>
-            <div className="flex gap-2">
-              <Button variant="ghost" size="sm" onClick={copyMessage} className="w-6 h-6 p-0 hover:bg-green-500">
-                <Copy className="h-3 w-3 text-green-100" />
-              </Button>
-            </div>
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/20">
+            <span className="text-xs opacity-75">{formatTime(message.timestamp)}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={copyMessage}
+              className="w-8 h-8 p-0 hover:bg-white/20 text-white"
+            >
+              <Copy className="h-4 w-4" />
+            </Button>
           </div>
         </div>
-        <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
+        <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
           <User className="h-5 w-5 text-white" />
         </div>
       </div>
@@ -419,37 +603,43 @@ function MessageBubble({ message }) {
 
   return (
     <div className="flex items-start gap-4">
-      <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
+      <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
         <Bot className="h-5 w-5 text-white" />
       </div>
-      <div className="bg-white rounded-2xl p-4 shadow-lg max-w-2xl">
-        <div className="text-gray-800">
-          {formatText(message.content)}
-          {message.isStreaming && <span className="inline-block w-2 h-5 bg-green-500 ml-1 animate-pulse"></span>}
-        </div>
+                           <div className="bg-white rounded-2xl p-5 shadow-lg max-w-4xl border border-gray-100">
+          {/* Badges d'information */}
+          {(message.confidence || message.plantName) && (
+            <div className="flex flex-wrap gap-2 mb-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+              {message.confidence && (
+                <Badge variant="outline" className="text-xs bg-blue-100 border-blue-300 text-blue-800">
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  {message.confidence}% de confiance
+                </Badge>
+              )}
+              {message.plantName && message.plantName !== "Identification échouée" && (
+                <Badge variant="secondary" className="text-xs bg-green-100 border-green-300 text-green-800">
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  {message.plantName}
+                </Badge>
+              )}
+              {message.plantName === "Identification échouée" && (
+                <Badge variant="destructive" className="text-xs bg-red-100 border-red-300 text-red-800">
+                  <AlertCircle className="h-3 w-3 mr-1" />
+                  Échec d'identification
+                </Badge>
+              )}
+            </div>
+          )}
 
-        {message.suggestions && (
-          <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-100">
-            {message.suggestions.map((suggestion, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                size="sm"
-                className="text-xs border-green-300 text-green-700 hover:bg-green-50 bg-transparent"
-              >
-                {suggestion}
-              </Button>
-            ))}
-          </div>
-        )}
+                                       <div className="text-gray-800 leading-relaxed bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border border-green-100 break-words">
+                      {formatText(message.content)}
+                    </div>
 
-        <div className="flex items-center justify-between pt-3 mt-4 border-t border-gray-100">
+        <div className="flex items-center justify-between pt-4 mt-4 border-t border-gray-100">
           <span className="text-xs text-gray-500">{formatTime(message.timestamp)}</span>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm" onClick={copyMessage} className="w-6 h-6 p-0 hover:bg-gray-100">
-              <Copy className="h-3 w-3 text-gray-600" />
-            </Button>
-          </div>
+          <Button variant="ghost" size="sm" onClick={copyMessage} className="w-8 h-8 p-0 hover:bg-gray-100">
+            <Copy className="h-4 w-4 text-gray-600" />
+          </Button>
         </div>
       </div>
     </div>
