@@ -388,31 +388,7 @@ export default function PlantsPage() {
       </div>
 
       {/* Section CTA */}
-      <section className="w-full py-12 bg-gradient-to-r from-green-700 to-teal-600 text-white">
-  <div className="max-w-4xl mx-auto px-4 md:px-6 text-center">
-    <h2 className="text-3xl md:text-4xl font-extrabold mb-4">Rejoignez notre communauté verte !</h2>
-    <p className="text-lg text-green-200 mb-6 max-w-2xl mx-auto">
-      Partagez vos expériences, échangez vos astuces et découvrez les plantes qui feront pousser votre passion.
-    </p>
-    <div className="flex flex-col sm:flex-row justify-center gap-6">
-      <Link href="/community-forum">
-        <Button className="inline-flex h-12 items-center justify-center rounded-3xl bg-white px-8 text-base font-semibold text-green-700 shadow-lg transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-          <Leaf className="mr-2 h-5 w-5" />
-          Accéder au forum
-        </Button>
-      </Link>
-      <Link href="/submit-tips">
-        <Button
-          variant="outline"
-          className="inline-flex h-12 items-center justify-center rounded-3xl border-2 border-white bg-transparent px-8 text-base font-semibold text-white shadow-lg transition-colors duration-300 hover:bg-white hover:text-green-700 hover:shadow-2xl"
-        >
-          <Heart className="mr-2 h-5 w-5" />
-          Partagez vos astuces
-        </Button>
-      </Link>
-    </div>
-  </div>
-</section>
+      
 
     </div>
   )

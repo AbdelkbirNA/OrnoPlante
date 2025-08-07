@@ -40,7 +40,7 @@ export default function MessagesPage() {
 useEffect(() => {
   const fetchMessages = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/contact');
+      const response = await fetch('${process.env.NEXT_PUBLIC_API}/api/contact');
       if (!response.ok) throw new Error('Erreur HTTP ' + response.status);
       const data = await response.json();
 console.log("Données reçues depuis l'API :", data);
@@ -83,9 +83,7 @@ console.log("Données reçues depuis l'API :", data);
 
   const markAsRead = async (messageId) => {
     try {
-      // Ici tu peux faire un appel API PATCH pour mettre à jour le statut en base
-      // await fetch(`http://localhost:8080/api/contact/${messageId}/read`, { method: 'PATCH' })
-
+      
       setMessages((prev) => prev.map((msg) => (msg.message_id === messageId ? { ...msg, is_read: true } : msg)))
     } catch (error) {
       console.error("Erreur lors du marquage comme lu:", error)

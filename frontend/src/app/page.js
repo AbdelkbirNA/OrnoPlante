@@ -211,45 +211,7 @@ export default function HomePage() {
       </section>
 
       {/* Section: FAQ intelligente */}
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-white">
-        <div className="px-4 md:px-6 max-w-7xl mx-auto text-center space-y-6">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl md:text-5xl">FAQ intelligente</h2>
-          <p className="mx-auto max-w-[700px] text-gray-600 md:text-lg">
-            Trouvez des réponses rapides à vos questions les plus fréquentes.
-          </p>
-          <div className="max-w-2xl mx-auto flex flex-col sm:flex-row justify-center gap-4">
-            <div className="relative flex-grow">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <Input
-                type="text"
-                placeholder="Rechercher une question..."
-                className="w-full pl-10 pr-4 py-2 rounded-full border-2 border-green-300 focus:border-green-500 focus:ring-green-500 shadow-sm"
-              />
-            </div>
-            <Button className="bg-green-600 hover:bg-green-700 rounded-full px-6">Rechercher</Button>
-          </div>
-          <div className="flex flex-wrap justify-center gap-3 mt-6 mx-auto max-w-4xl">
-            <Button
-              variant="outline"
-              className="rounded-full border-green-400 text-green-700 hover:bg-green-50 bg-transparent"
-            >
-              Comment rempoter une plante ?
-            </Button>
-            <Button
-              variant="outline"
-              className="rounded-full border-green-400 text-green-700 hover:bg-green-50 bg-transparent"
-            >
-              Comment détecter un excès d’eau ?
-            </Button>
-            <Button
-              variant="outline"
-              className="rounded-full border-green-400 text-green-700 hover:bg-green-50 bg-transparent"
-            >
-              Ma plante jaunit, que faire ?
-            </Button>
-          </div>
-        </div>
-      </section>
+      
 
       {/* Section: Témoignages & Avis */}
       <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-br from-emerald-50 to-green-50">

@@ -2,6 +2,9 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import { useAuth } from "@/lib/auth-context"
+import { useRouter } from "next/navigation"
+
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -25,7 +28,36 @@ import {
   CheckCircle,
 } from "lucide-react"
 
+const aiFeatures = [
+  {
+    icon: Search,
+    color: "bg-green-500",
+    title: "Identification",
+    description: "Identifiez instantanément vos plantes à partir d'une photo.",
+  },
+  {
+    icon: Bot,
+    color: "bg-emerald-500",
+    title: "Conseils IA",
+    description: "Obtenez des conseils personnalisés pour l’entretien de vos plantes.",
+  },
+  {
+    icon: Sparkles,
+    color: "bg-blue-500",
+    title: "Détection maladies",
+    description: "Détectez les maladies et carences de vos plantes.",
+  },
+  {
+    icon: Info,
+    color: "bg-yellow-500",
+    title: "Fiches botaniques",
+    description: "Accédez à des fiches détaillées sur chaque espèce.",
+  },
+]
+
 export default function PlantDetectionAI() {
+   const { isLoggedIn, loading } = useAuth()
+  const router = useRouter()
   const [selectedImage, setSelectedImage] = useState(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [conversation, setConversation] = useState([])
@@ -60,7 +92,27 @@ export default function PlantDetectionAI() {
       reader.readAsDataURL(file)
     }
   }
+  
+  if (!loading && !isLoggedIn) {
+  // Affiche un message pendant 1 seconde avant de rediriger
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      router.push("/login")
+    }, 3000)
+    return () => clearTimeout(timer)
+  }, [])
 
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+        <p className="text-lg text-green-700 font-semibold mb-2">
+          Vous devez être connecté pour accéder à l’assistant IA.
+        </p>
+        <p className="text-gray-500">Redirection vers la page de connexion...</p>
+      </div>
+    </div>
+  )
+}
 
 
   const handleAnalyze = async () => {
@@ -89,7 +141,7 @@ export default function PlantDetectionAI() {
       formData.append("image", blob, "plant-identification.jpg")
       formData.append("type", "leaf")
 
-      const apiResponse = await fetch("http://localhost:8080/api/plantnet/identify", {
+      const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_API}/api/plantnet/identify`, {
         method: "POST",
         body: formData,
       }).catch(error => {
@@ -158,7 +210,7 @@ export default function PlantDetectionAI() {
 
     try {
              // Appel à l'API Gemini
-       const response = await fetch("http://localhost:8080/api/gemini/generate", {
+       const response = await fetch(`${process.env.NEXT_PUBLIC_API}/api/gemini/generate`, {
          method: "POST",
          headers: {
            "Content-Type": "application/json",
@@ -231,22 +283,55 @@ Désolé, OrnoAI n'a pas pu traiter votre demande pour le moment.
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-50">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                <Leaf className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">PlantAI Detection</h1>
-                <p className="text-sm text-gray-600">Identifiez vos plantes en un clic</p>
-              </div>
+      
+<section className="relative w-full py-16 bg-gradient-to-br from-green-600 via-emerald-600 to-green-700 text-white overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full opacity-10 animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-24 h-24 bg-white rounded-full opacity-15 animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 w-40 h-40 bg-white rounded-full opacity-5 animate-pulse delay-500"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10">
+          <div className="text-center space-y-8">
+            <div className="inline-flex items-center gap-3 bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 text-base font-medium">
+              <Bot className="h-6 w-6" />
+              Assistant IA Botanique
+            </div>
+
+            <div className="space-y-6">
+              <h1 className="text-5xl md:text-7xl font-black leading-tight">
+                Votre expert
+                <span className="block text-emerald-200">en plantes IA</span>
+              </h1>
+              <p className="text-xl text-green-100 max-w-3xl mx-auto leading-relaxed">
+                Obtenez des conseils personnalisés, identifiez vos plantes et résolvez tous vos problèmes botaniques
+                avec notre intelligence artificielle avancée
+              </p>
+            </div>
+
+            {/* Fonctionnalités principales */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+              {aiFeatures.map((feature, index) => {
+                const IconComponent = feature.icon
+                return (
+                  <div
+                    key={index}
+                    className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center hover:bg-white/20 transition-all duration-300"
+                  >
+                    <div
+                      className={`w-12 h-12 ${feature.color} rounded-xl flex items-center justify-center mx-auto mb-3`}
+                    >
+                      <IconComponent className="h-6 w-6 text-white" />
+                    </div>
+                    <h3 className="font-semibold mb-2">{feature.title}</h3>
+                    <p className="text-sm text-green-100">{feature.description}</p>
+                  </div>
+                )
+              })}
             </div>
           </div>
         </div>
-      </header>
-
+      </section>
              {/* Contenu principal */}
        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
          {/* Onglets */}

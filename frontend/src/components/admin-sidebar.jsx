@@ -34,19 +34,10 @@ const menuItems = [
   },
   {
     title: "Gestion des message",
-    icon: User,
+    icon: MessageSquare,
     route: "messages",
   },
-  {
-    title: "FAQ & Questions",
-    icon: HelpCircle,
-    route: "faq",
-  },
-  {
-    title: "Analytics Chatbot",
-    icon: MessageSquare,
-    route: "chatbot",
-  },
+  
 ]
 
 export function AdminSidebar() {
