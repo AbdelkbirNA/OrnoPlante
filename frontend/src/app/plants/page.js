@@ -577,32 +577,7 @@ function PlantCard({ plant, viewMode, compareList, setCompareList }) {
         </div>
 
         {/* Actions rapides */}
-        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsFavorite(!isFavorite)}
-            className="w-8 h-8 p-0 bg-white/80 backdrop-blur-sm hover:bg-white"
-          >
-            <Heart className={`h-4 w-4 ${isFavorite ? "fill-red-500 text-red-500" : "text-gray-600"}`} />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleCompare}
-            className={`w-8 h-8 p-0 backdrop-blur-sm hover:bg-white ${
-              isInCompare ? "bg-blue-100 text-blue-600" : "bg-white/80 text-gray-600"
-            }`}
-            disabled={!isInCompare && compareList.length >= 4}
-          >
-            <Compare className="h-4 w-4" />
-          </Button>
-          <Link href={`/plants/${plant.plant_id}`}>
-            <Button variant="ghost" size="sm" className="w-8 h-8 p-0 bg-white/80 backdrop-blur-sm hover:bg-white">
-              <Eye className="h-4 w-4 text-gray-600" />
-            </Button>
-          </Link>
-        </div>
+        
         {/* Price in overlay removed */}
         {/* Special properties icons removed */}
       </div>
@@ -631,12 +606,7 @@ function PlantCard({ plant, viewMode, compareList, setCompareList }) {
         {/* Tags supplémentaires removed */}
         {/* Actions */}
         <div className="flex gap-2">
-          <Link href={`/plants/${plant.plant_id}`} className="flex-1">
-            <Button className="w-full bg-green-600 hover:bg-green-700 text-sm">
-              <Eye className="h-4 w-4 mr-1" />
-              Détails
-            </Button>
-          </Link>
+          
           {/* Add to cart button removed */}
         </div>
         {/* Infos supplémentaires (stock, favorites) removed */}

@@ -120,67 +120,7 @@ export default function HomePage() {
       </section>
 
       {/* Section: Les fiches plantes les plus consultées */}
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-white">
-        <div className="px-4 md:px-6 max-w-7xl mx-auto">
-          <div className="text-center space-y-6 mb-12">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl md:text-5xl">
-              Les fiches plantes les plus consultées
-            </h2>
-            <p className="mx-auto max-w-[700px] text-gray-600 md:text-lg">
-              Découvrez les plantes qui captivent le plus notre communauté.
-            </p>
-          </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 justify-items-center sm:justify-items-start">
-            {[
-              {
-                name: "Monstera Deliciosa",
-                scientific: "Monstera deliciosa",
-                excerpt: "Arrosage : modéré | Lumière : indirecte",
-                image: "/plants/pext.jpg",
-              },
-              {
-                name: "Aloe Vera",
-                scientific: "Aloe barbadensis miller",
-                excerpt: "Arrosage : faible | Lumière : directe/indirecte",
-                image: "/plants/pdeco.jpg",
-              },
-              {
-                name: "Ficus Lyrata",
-                scientific: "Ficus lyrata",
-                excerpt: "Arrosage : régulier | Lumière : vive indirecte",
-                image: "/plants/pgrasse.jpg",
-              },
-            ].map((plant, index) => (
-              <Card
-                key={index}
-                className="bg-green-50 border-green-200 shadow-md hover:shadow-lg transition-shadow duration-300 w-full max-w-[400px]"
-              >
-                <Image
-                  src={plant.image || "/placeholder.svg"}
-                  alt={plant.name}
-                  width={400}
-                  height={300}
-                  className="rounded-t-lg object-cover w-full aspect-[4/3]"
-                />
-                <CardContent className="p-4 space-y-2">
-                  <CardTitle className="text-xl font-semibold text-green-800">{plant.name}</CardTitle>
-                  <p className="text-sm text-gray-600 italic">{plant.scientific}</p>
-                  <p className="text-gray-700">{plant.excerpt}</p>
-                  <Link href={`/plants/${plant.name.toLowerCase().replace(/ /g, "-")}`}>
-                    <Button
-                      variant="outline"
-                      className="w-full mt-2 border-green-500 text-green-700 hover:bg-green-100 bg-transparent"
-                    >
-                      Voir la fiche complète
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
+      
       {/* Section: À propos de HanPlant */}
       <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-br from-green-100 to-emerald-100">
         <div className="px-4 md:px-6 max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">

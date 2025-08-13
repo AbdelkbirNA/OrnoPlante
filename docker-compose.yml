@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  frontend:
+    container_name: frontend-frontend
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./frontend/.env.docker
+    depends_on:
+      - backend
+
+  backend:
+    container_name: backend-backend
+    build:
+      context: ./backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./backend/.env.docker
+    depends_on:
+      - db
+    command: sh -c "until nc -z db 3306; do echo '⏳ Waiting for db...'; sleep 2; done && echo '✅ DB is up' && npx prisma migrate deploy && node src/server.js"
+
+  db:
+    container_name: backend-db
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: Ornoplante
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:

@@ -23,9 +23,7 @@ async function startServer() {
   }
 
   app.listen(PORT, () => {
-    console.log('Loaded DATABASE_HOST:', process.env.DATABASE_HOST);
-console.log('Current NODE_ENV:', process.env.NODE_ENV);
-
+    console.log(process.env.DATABASE_URL)
     console.log(`🚀 Server running on port ${PORT}`);
   });
 }

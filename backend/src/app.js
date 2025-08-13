@@ -34,7 +34,6 @@ app.get("/", (req, res) => {
   res.send("hi");
 });
 
-
 app.use("/api/gemini", geminiRoute);
 app.use("/api", authRoutes); 
 app.use("/api/", profilRoute);

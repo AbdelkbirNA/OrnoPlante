@@ -93,14 +93,14 @@ export default function PlantDetectionAI() {
     }
   }
   
-  if (!loading && !isLoggedIn) {
-  // Affiche un message pendant 1 seconde avant de rediriger
   useEffect(() => {
+  if (!loading && !isLoggedIn) {
     const timer = setTimeout(() => {
       router.push("/login")
     }, 3000)
     return () => clearTimeout(timer)
-  }, [])
+  }
+}, [loading, isLoggedIn, router])
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -110,9 +110,8 @@ export default function PlantDetectionAI() {
         </p>
         <p className="text-gray-500">Redirection vers la page de connexion...</p>
       </div>
-    </div>
-  )
-}
+   </div>
+ )
 
 
   const handleAnalyze = async () => {
