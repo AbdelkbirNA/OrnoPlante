@@ -1,8 +1,18 @@
-node_modules
+node_modules/
+
 # Keep environment variables out of version control
+.env
 .env.local
 .env.production
+.env.docker
+prisma/.env*
+prisma/.env.docker
 
-/generated/prisma
+.prisma/
+generated/
 
-/generated/prisma
+
+# Docker
+mysql-data/
+*.pid
+*.log
