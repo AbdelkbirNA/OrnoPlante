@@ -12,6 +12,7 @@ function verifyToken(req,res,next){
     const token = header.split(" ")[1];
     try {
         const decoded = jwt.verify(token,JWT_SECRET);
+        console.log("Payload token:", decoded);
         req.user=decoded;
         console.log("JWT_SECRET:", process.env.JWT_SECRET);
 

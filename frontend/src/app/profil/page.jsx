@@ -54,6 +54,13 @@ export default function UserProfile() {
   const [profilePicturePreviewUrl, setProfilePicturePreviewUrl] = useState(null)
   const [token, setToken] = useState(null)
   const [activeTab, setActiveTab] = useState("overview")
+  const [passwordData, setPasswordData] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  })
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false)
+  const [isPasswordChanging, setIsPasswordChanging] = useState(false)
 
   // Récupère le token stocké
   useEffect(() => {
@@ -65,6 +72,7 @@ export default function UserProfile() {
       setLoading(false)
     }
   }, [])
+  
 
   useEffect(() => {
     if (!token) return
@@ -173,6 +181,48 @@ export default function UserProfile() {
       })
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handlePasswordInputChange = (e) => {
+    const { name, value } = e.target
+    setPasswordData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault()
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error("Erreur", { description: "Les nouveaux mots de passe ne correspondent pas." })
+      return
+    }
+    setIsPasswordChanging(true)
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API}/api/user/change-password`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          oldPassword: passwordData.oldPassword,
+          newPassword: passwordData.newPassword,
+          confirmPassword: passwordData.confirmPassword,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || "Une erreur est survenue.")
+      }
+
+      toast.success("Succès", { description: "Votre mot de passe a été changé avec succès." })
+      setIsPasswordDialogOpen(false)
+      setPasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" })
+    } catch (error) {
+      toast.error("Erreur", { description: error.message })
+    } finally {
+      setIsPasswordChanging(false)
     }
   }
 
@@ -675,10 +725,67 @@ export default function UserProfile() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Button variant="outline" className="w-full justify-start bg-transparent">
-                    <Lock className="h-4 w-4 mr-2" />
-                    Changer le mot de passe
-                  </Button>
+                  <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start bg-transparent">
+                        <Lock className="h-4 w-4 mr-2" />
+                        Changer le mot de passe
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <form onSubmit={handlePasswordChange}>
+                        <DialogHeader>
+                          <DialogTitle>Changer votre mot de passe</DialogTitle>
+                          <DialogDescription>
+                            Entrez votre ancien mot de passe et choisissez-en un nouveau.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="oldPassword">Ancien mot de passe</Label>
+                            <Input
+                              id="oldPassword"
+                              name="oldPassword"
+                              type="password"
+                              value={passwordData.oldPassword}
+                              onChange={handlePasswordInputChange}
+                              required
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="newPassword">Nouveau mot de passe</Label>
+                            <Input
+                              id="newPassword"
+                              name="newPassword"
+                              type="password"
+                              value={passwordData.newPassword}
+                              onChange={handlePasswordInputChange}
+                              required
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</Label>
+                            <Input
+                              id="confirmPassword"
+                              name="confirmPassword"
+                              type="password"
+                              value={passwordData.confirmPassword}
+                              onChange={handlePasswordInputChange}
+                              required
+                            />
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button type="button" variant="ghost" onClick={() => setIsPasswordDialogOpen(false)}>
+                            Annuler
+                          </Button>
+                          <Button type="submit" disabled={isPasswordChanging}>
+                            {isPasswordChanging ? "Sauvegarde..." : "Sauvegarder"}
+                          </Button>
+                        </DialogFooter>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
                   <Button variant="outline" className="w-full justify-start bg-transparent">
                     <Shield className="h-4 w-4 mr-2" />
                     Authentification à deux facteurs

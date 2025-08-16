@@ -71,6 +71,9 @@ export default function Navbar() {
   const pathname = usePathname()
   const { isLoggedIn, user, logout, loading, error } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  useEffect(()=>{
+console.log("abdo navbar"+user)
+},[])
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

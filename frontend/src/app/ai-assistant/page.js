@@ -56,7 +56,7 @@ const aiFeatures = [
 ]
 
 export default function PlantDetectionAI() {
-   const { isLoggedIn, loading } = useAuth()
+const { isLoggedIn, loading, user } = useAuth()
   const router = useRouter()
   const [selectedImage, setSelectedImage] = useState(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -73,7 +73,9 @@ export default function PlantDetectionAI() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
-
+useEffect(()=>{
+console.log("abdo")
+},[])
   useEffect(() => {
     scrollToBottom()
   }, [conversation])
@@ -94,14 +96,15 @@ export default function PlantDetectionAI() {
   }
   
   useEffect(() => {
-  if (!loading && !isLoggedIn) {
+  if (!loading && !user) {
     const timer = setTimeout(() => {
       router.push("/login")
     }, 3000)
     return () => clearTimeout(timer)
   }
-}, [loading, isLoggedIn, router])
+}, [loading, user, router])
 
+    if (!user) {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="bg-white rounded-xl shadow-lg p-8 text-center">
@@ -112,7 +115,7 @@ export default function PlantDetectionAI() {
       </div>
    </div>
  )
-
+    }
 
   const handleAnalyze = async () => {
     if (!selectedImage) return

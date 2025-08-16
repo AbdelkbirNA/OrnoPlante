@@ -1,9 +1,9 @@
-const { getUserProfile } = require("../services/userService");
+const { getUser } = require("../services/getUser");
 
 async function isAdmin(req, res, next) {
   try {
-    const userId = req.user.user_id;
-    const userProfile = await getUserProfile(userId);
+    const userId = req.user.userId;
+    const userProfile = await getUser(userId);
 
     if (userProfile.user_type === "admin") {
       return next();

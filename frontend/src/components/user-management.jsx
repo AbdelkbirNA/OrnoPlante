@@ -231,19 +231,17 @@ const response = await fetch(`${process.env.NEXT_PUBLIC_API}/api/users`);
   }
 
 const makeUserAdmin = async (user) => {
+  const token = localStorage.getItem("token");
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API}/api/user/promote/${user.user_id}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
       },
-      body: JSON.stringify({
-        ...user,
-        user_type: "Admin",
-      }),
     })
 
-    if (!response.ok) throw new Error("Échec de la mise à jour de l'utilisateur")
+    if (!response.ok) throw new Error("Échec de la promotion de l'utilisateur")
 
     toast.success("Utilisateur promu administrateur", {
       description: `${user.first_name} ${user.last_name} est maintenant un administrateur.`,
@@ -257,6 +255,32 @@ const makeUserAdmin = async (user) => {
     })
   }
 }
+
+const demoteAdmin = async (user) => {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API}/api/user/demote/${user.user_id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+    });
+
+    if (!response.ok) throw new Error("Échec de la rétrogradation de l'administrateur");
+
+    toast.success("Administrateur rétrogradé", {
+      description: `${user.first_name} ${user.last_name} est maintenant un utilisateur standard.`,
+    });
+
+    fetchUsers(); // Recharge la liste
+  } catch (error) {
+    console.error(error);
+    toast.error("Erreur", {
+      description: "Impossible de rétrograder cet administrateur.",
+    });
+  }
+};
      
 
 
@@ -497,10 +521,18 @@ const makeUserAdmin = async (user) => {
                             <DropdownMenuItem
                             className="text-green-600"
                               onClick={() => makeUserAdmin(user)}
-                              disabled={user.user_type === "Admin"}
+                              disabled={user.user_type === "admin"}
                             >
                               <Shield className="mr-2 h-4 w-4" />
                               Promouvoir admin
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                            className="text-orange-600"
+                              onClick={() => demoteAdmin(user)}
+                              disabled={user.user_type !== "admin"}
+                            >
+                              <User className="mr-2 h-4 w-4" />
+                              Rétrograder
                             </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteUser(user)}>
