@@ -1,7 +1,0 @@
-# Utiliser ton image Docker Hub comme base
-FROM abdelkbirna/ornoplante-frontend:prod
-
-# Exposer le port que Vercel utilise
-EXPOSE 3000
-
-CMD ["npm", "start"]
