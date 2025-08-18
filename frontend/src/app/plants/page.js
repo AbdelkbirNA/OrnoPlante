@@ -1,8 +1,6 @@
-/* eslint-disable react/jsx-no-comment-textnodes */
-
 "use client"
 
-import { useState,useEffect } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -31,9 +29,7 @@ import {
   TreePine,
   Zap,
 } from "lucide-react"
-
-// Simplified mock data based on the provided Prisma Plant model
-
+import { toast } from "sonner"
 
 // Filter options adapted to the new data structure
 const filterOptions = {
@@ -57,10 +53,17 @@ const filterOptions = {
   ],
 }
 
-// Preset filters removed as they are not needed for a presentation site
-
 export default function PlantsPage() {
-    const [plants, setPlants] = useState([])
+  const [plants, setPlants] = useState([])
+  const [favorites, setFavorites] = useState([])
+  const [token, setToken] = useState(null)
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token")
+    if (storedToken) {
+      setToken(storedToken)
+    }
+  }, [])
 
   async function fetchPlants() {
     try {
@@ -74,13 +77,35 @@ export default function PlantsPage() {
       toast.error("Erreur", {
         description: "Impossible de charger les plantes",
       })
-    } finally {
+    }
+  }
+
+  async function fetchFavorites() {
+    if (!token) return
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API}/api/favorites`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      if (!res.ok) throw new Error("Erreur lors de la récupération des favoris")
+      const data = await res.json()
+      setFavorites(data.map(fav => fav.plant_id))
+    } catch (error) {
+      console.error(error)
+      setFavorites([])
     }
   }
 
   useEffect(() => {
     fetchPlants()
   }, [])
+
+  useEffect(() => {
+    if (token) {
+      fetchFavorites()
+    }
+  }, [token])
 
   const [searchTerm, setSearchTerm] = useState("")
   const [filters, setFilters] = useState({
@@ -379,6 +404,9 @@ export default function PlantsPage() {
                     viewMode={viewMode}
                     compareList={compareList}
                     setCompareList={setCompareList}
+                    favorites={favorites}
+                    onFavoriteChange={fetchFavorites}
+                    token={token}
                   />
                 ))}
               </div>
@@ -478,8 +506,40 @@ function RangeFilter({ label, min, max, onChange, minLimit, maxLimit, step, icon
 }
 
 // Composant PlantCard amélioré
-function PlantCard({ plant, viewMode, compareList, setCompareList }) {
-  const [isFavorite, setIsFavorite] = useState(false)
+function PlantCard({ plant, viewMode, compareList, setCompareList, favorites, onFavoriteChange, token }) {
+  const isFavorite = favorites.includes(plant.plant_id)
+
+  const handleFavoriteClick = async () => {
+    if (!token) {
+      toast.error("Veuillez vous connecter pour ajouter des favoris.")
+      return
+    }
+
+    const url = `${process.env.NEXT_PUBLIC_API}/api/favorites/${isFavorite ? "remove" : "add"}`
+    const method = isFavorite ? "DELETE" : "POST"
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ plantId: plant.plant_id }),
+      })
+
+      if (res.ok) {
+        toast.success(isFavorite ? "Plante retirée des favoris" : "Plante ajoutée aux favoris")
+        onFavoriteChange()
+      } else {
+        toast.error("Une erreur est survenue.")
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error("Erreur de connexion.")
+    }
+  }
+
   const isInCompare = compareList.includes(plant.plant_id)
 
   const toggleCompare = () => {
@@ -533,7 +593,7 @@ function PlantCard({ plant, viewMode, compareList, setCompareList }) {
               </div>
 
               <div className="flex gap-2">
-                <Button variant="ghost" size="sm" onClick={() => setIsFavorite(!isFavorite)} className="p-2">
+                <Button variant="ghost" size="sm" onClick={handleFavoriteClick} className="p-2">
                   <Heart className={`h-4 w-4 ${isFavorite ? "fill-red-500 text-red-500" : "text-gray-400"}`} />
                 </Button>
                 <Button
@@ -577,6 +637,11 @@ function PlantCard({ plant, viewMode, compareList, setCompareList }) {
         </div>
 
         {/* Actions rapides */}
+        <div className="absolute top-3 right-3">
+            <Button variant="ghost" size="sm" onClick={handleFavoriteClick} className="p-2 bg-white/70 hover:bg-white rounded-full">
+                <Heart className={`h-5 w-5 ${isFavorite ? "fill-red-500 text-red-500" : "text-gray-500"}`} />
+            </Button>
+        </div>
         
         {/* Price in overlay removed */}
         {/* Special properties icons removed */}

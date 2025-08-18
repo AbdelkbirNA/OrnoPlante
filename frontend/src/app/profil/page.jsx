@@ -21,7 +21,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { toast } from "sonner"
+import { toast } from "sonner";
+import FavoritePlantsList from "@/components/favorite-plants-list";
 import {
   User,
   Calendar,
@@ -376,7 +377,7 @@ export default function UserProfile() {
       {/* Contenu principal */}
       <div className="max-w-6xl mx-auto px-6 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-5 bg-white/50 backdrop-blur-sm">
+          <TabsList className="grid w-full grid-cols-6 bg-white/50 backdrop-blur-sm">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <Activity className="h-4 w-4" />
               Vue d'ensemble
@@ -384,6 +385,10 @@ export default function UserProfile() {
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               Profil
+            </TabsTrigger>
+            <TabsTrigger value="favorites" className="flex items-center gap-2">
+              <Heart className="h-4 w-4" />
+              Favoris
             </TabsTrigger>
             <TabsTrigger value="stats" className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
@@ -599,6 +604,11 @@ export default function UserProfile() {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Favoris */}
+          <TabsContent value="favorites" className="space-y-6">
+            <FavoritePlantsList />
           </TabsContent>
 
           {/* Statistiques */}

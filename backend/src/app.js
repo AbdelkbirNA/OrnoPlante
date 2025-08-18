@@ -7,6 +7,7 @@ const planteRoutes = require("./routes/planteRoutes");
 const geminiRoute = require("./routes/geminiRoute");
 const path = require("path");
 const contactRoutes = require('./routes/contactRoutes')
+const favoriteRoutes = require("./routes/favoriteRoutes");
 
 const multer = require("multer");
 const plantnetRoutes = require('./routes/plantnetRoutes'); 
@@ -41,5 +42,6 @@ app.use("/api/", updatroute);
 app.use("/api/", planteRoutes);
 app.use("/api/plantnet", plantnetRoutes);
 app.use('/api', contactRoutes)
+app.use("/api/favorites", favoriteRoutes);
 
 module.exports = app;
