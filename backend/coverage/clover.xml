@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1755463812351" clover="3.2.0">
+  <project timestamp="1755463812351" name="All files">
+    <metrics statements="15" coveredstatements="10" conditionals="2" coveredconditionals="2" methods="2" coveredmethods="1" elements="19" coveredelements="13" complexity="0" loc="15" ncloc="15" packages="1" files="1" classes="1"/>
+    <file name="getPlant.js" path="D:\Univ\CycleIng\Software Engineering\Stage\OrnoPlante\backend\src\services\getPlant.js">
+      <metrics statements="15" coveredstatements="10" conditionals="2" coveredconditionals="2" methods="2" coveredmethods="1"/>
+      <line num="1" count="1" type="stmt"/>
+      <line num="2" count="1" type="stmt"/>
+      <line num="5" count="2" type="stmt"/>
+      <line num="6" count="2" type="stmt"/>
+      <line num="14" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="15" count="1" type="stmt"/>
+      <line num="18" count="1" type="stmt"/>
+      <line num="20" count="1" type="stmt"/>
+      <line num="21" count="1" type="stmt"/>
+      <line num="26" count="0" type="stmt"/>
+      <line num="27" count="0" type="stmt"/>
+      <line num="41" count="0" type="stmt"/>
+      <line num="45" count="0" type="stmt"/>
+      <line num="46" count="0" type="stmt"/>
+      <line num="52" count="1" type="stmt"/>
+    </file>
+  </project>
+</coverage>
