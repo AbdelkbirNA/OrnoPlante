@@ -1,19 +1,21 @@
 const { GoogleGenAI } = require("@google/genai");
+const { PrismaClient } = require("@prisma/client");
 
+const prisma = new PrismaClient();
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
 async function generateContent(req, res) {
   try {
-    const userInput = req.body.text;
+    const { text: userInput, userId } = req.body;
     if (!userInput) {
       return res.status(400).json({ error: 'Missing "text" in request body' });
     }
 
     const model = "gemini-2.5-pro";
     const tools = [];
-    const config = { thinkingConfig: { thinkingBudget: -1 }};
+    const config = { thinkingConfig: { thinkingBudget: -1 } };
 
     const prompt = `Tu es **OrnoAI**, l’assistant intelligent spécialisé en botanique intégré à la plateforme **OrnoPlante**.
 
@@ -37,14 +39,13 @@ async function generateContent(req, res) {
     
     Voici la question de l’utilisateur :  
     **${userInput}**`;
-    
 
-const contents = [
-  {
-    role: "user",
-    parts: [{ text: prompt }],
-  },
-];
+    const contents = [
+      {
+        role: "user",
+        parts: [{ text: prompt }],
+      },
+    ];
     const responseStream = await ai.models.generateContentStream({
       model,
       config,
@@ -54,6 +55,19 @@ const contents = [
     let fullResponse = "";
     for await (const chunk of responseStream) {
       fullResponse += chunk.text;
+    }
+
+    // Enregistrer la question et la réponse dans la base de données
+    if (userId) {
+      await prisma.chatbotQuestion.create({
+        data: {
+          user_id: userId,
+          question_text: userInput,
+          answer_text: fullResponse,
+          question_date: new Date(),
+          used_in_faq: false,
+        },
+      });
     }
 
     res.json({ response: fullResponse });

@@ -218,7 +218,8 @@ console.log("abdo")
            "Content-Type": "application/json",
          },
          body: JSON.stringify({
-           text: geminiInput
+           text: geminiInput,
+           userId: user ? user.user_id : null
          }),
        })
 
