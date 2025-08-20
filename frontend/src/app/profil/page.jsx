@@ -375,443 +375,269 @@ export default function UserProfile() {
       </div>
 
       {/* Contenu principal */}
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-6 bg-white/50 backdrop-blur-sm">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              Vue d'ensemble
-            </TabsTrigger>
-            <TabsTrigger value="profile" className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              Profil
-            </TabsTrigger>
-            <TabsTrigger value="favorites" className="flex items-center gap-2">
-              <Heart className="h-4 w-4" />
-              Favoris
-            </TabsTrigger>
-            <TabsTrigger value="stats" className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4" />
-              Statistiques
-            </TabsTrigger>
-            <TabsTrigger value="achievements" className="flex items-center gap-2">
-              <Award className="h-4 w-4" />
-              Succès
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Paramètres
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Vue d'ensemble */}
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-green-100">Mes plantes</p>
-                      <p className="text-3xl font-bold">{staticStats.plants}</p>
-                    </div>
-                    <Leaf className="h-8 w-8 text-green-200" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-red-500 to-pink-600 text-white border-0">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-red-100">Favoris</p>
-                      <p className="text-3xl font-bold">{staticStats.favorites}</p>
-                    </div>
-                    <Heart className="h-8 w-8 text-red-200" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-blue-100">Questions</p>
-                      <p className="text-3xl font-bold">{staticStats.chatbot_questions}</p>
-                    </div>
-                    <MessageSquare className="h-8 w-8 text-blue-200" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-purple-100">Visites</p>
-                      <p className="text-3xl font-bold">{staticStats.visit_statistics}</p>
-                    </div>
-                    <Eye className="h-8 w-8 text-purple-200" />
-                  </div>
-                </CardContent>
-              </Card>
+      <div className="max-w-6xl mx-auto px-6 py-8 space-y-8">
+        {/* Informations personnelles */}
+        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-5 w-5 text-green-500" />
+                  Informations personnelles
+                </CardTitle>
+                <CardDescription>Gérez vos informations de profil</CardDescription>
+              </div>
+              {!isEditing && (
+                <Button onClick={handleEdit} className="bg-gradient-to-r from-green-500 to-blue-500">
+                  <Edit2 className="h-4 w-4 mr-2" />
+                  Modifier
+                </Button>
+              )}
             </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Niveau et expérience */}
-              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Star className="h-5 w-5 text-yellow-500" />
-                    Niveau et Expérience
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold">Niveau {staticStats.level}</span>
-                    <Badge className="bg-yellow-100 text-yellow-800">
-                      {staticStats.experience}/{staticStats.nextLevelExp} XP
-                    </Badge>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {isEditing ? (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="first_name">Prénom</Label>
+                    <Input
+                      id="first_name"
+                      value={editData.first_name || ""}
+                      onChange={(e) => handleInputChange("first_name", e.target.value)}
+                      placeholder="Votre prénom"
+                      className="bg-white/50"
+                    />
                   </div>
-                  <Progress value={(staticStats.experience / staticStats.nextLevelExp) * 100} className="h-3" />
-                  <p className="text-sm text-gray-600">
-                    Plus que {staticStats.nextLevelExp - staticStats.experience} XP pour le niveau suivant !
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* Activité récente */}
-              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Activity className="h-5 w-5 text-blue-500" />
-                    Activité récente
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ScrollArea className="h-48">
-                    <div className="space-y-4">
-                      {recentActivity.map((activity, index) => (
-                        <div key={index} className="flex items-start gap-3">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                          <div className="flex-1">
-                            <p className="text-sm font-medium">{activity.action}</p>
-                            <p className="text-sm text-gray-600">{activity.item}</p>
-                            <p className="text-xs text-gray-500">{activity.time}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Profil */}
-          <TabsContent value="profile" className="space-y-6">
-            <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <User className="h-5 w-5 text-green-500" />
-                      Informations personnelles
-                    </CardTitle>
-                    <CardDescription>Gérez vos informations de profil</CardDescription>
+                  <div className="space-y-2">
+                    <Label htmlFor="last_name">Nom</Label>
+                    <Input
+                      id="last_name"
+                      value={editData.last_name || ""}
+                      onChange={(e) => handleInputChange("last_name", e.target.value)}
+                      placeholder="Votre nom"
+                      className="bg-white/50"
+                    />
                   </div>
-                  {!isEditing && (
-                    <Button onClick={handleEdit} className="bg-gradient-to-r from-green-500 to-blue-500">
-                      <Edit2 className="h-4 w-4 mr-2" />
-                      Modifier
-                    </Button>
-                  )}
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {isEditing ? (
-                  <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={editData.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    placeholder="votre.email@example.com"
+                    className="bg-white/50"
+                  />
+                </div>
+                <div className="flex space-x-3">
+                  <Button onClick={handleSave} className="flex-1 bg-gradient-to-r from-green-500 to-blue-500">
+                    <Save className="h-4 w-4 mr-2" />
+                    Sauvegarder
+                  </Button>
+                  <Button onClick={handleCancel} variant="outline" className="flex-1 bg-transparent">
+                    <X className="h-4 w-4 mr-2" />
+                    Annuler
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-6">
+                  <div className="p-4 bg-white/50 rounded-lg">
+                    <Label className="text-sm font-medium text-gray-500">Prénom</Label>
+                    <p className="mt-1 text-lg font-semibold">{userData.first_name || "Non renseigné"}</p>
+                  </div>
+                  <div className="p-4 bg-white/50 rounded-lg">
+                    <Label className="text-sm font-medium text-gray-500">Nom</Label>
+                    <p className="mt-1 text-lg font-semibold">{userData.last_name || "Non renseigné"}</p>
+                  </div>
+                </div>
+                <div className="space-y-6">
+                  <div className="p-4 bg-white/50 rounded-lg">
+                    <Label className="text-sm font-medium text-gray-500">Adresse email</Label>
+                    <p className="mt-1 text-lg font-semibold">{userData.email}</p>
+                  </div>
+                  <div className="p-4 bg-white/50 rounded-lg">
+                    <Label className="text-sm font-medium text-gray-500">Type d'utilisateur</Label>
+                    <p className="mt-1">
+                      <Badge className={getUserTypeColor(userData.user_type)}>
+                        {userData.user_type || "utilisateur"}
+                      </Badge>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Vue d'ensemble Stats */}
+        
+
+        {/* Favoris */}
+        <FavoritePlantsList />
+
+        {/* Statistiques */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+            <CardHeader>
+              <CardTitle>Progression mensuelle</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {["Janvier", "Février", "Mars", "Avril"].map((month, index) => (
+                  <div key={month} className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>{month}</span>
+                      <span>{Math.floor(Math.random() * 50) + 10} plantes</span>
+                    </div>
+                    <Progress value={Math.floor(Math.random() * 80) + 20} className="h-2" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+            <CardHeader>
+              <CardTitle>Catégories préférées</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[
+                  { name: "Plantes d'intérieur", percentage: 45 },
+                  { name: "Plantes tropicales", percentage: 30 },
+                  { name: "Succulentes", percentage: 15 },
+                  { name: "Plantes médicinales", percentage: 10 },
+                ].map((category, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>{category.name}</span>
+                      <span>{category.percentage}%</span>
+                    </div>
+                    <Progress value={category.percentage} className="h-2" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        
+
+        {/* Paramètres */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Bell className="h-5 w-5 text-blue-500" />
+                Notifications
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Notifications email</p>
+                  <p className="text-sm text-gray-600">Recevoir des emails de notification</p>
+                </div>
+                <Switch defaultChecked />
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Notifications push</p>
+                  <p className="text-sm text-gray-600">Notifications dans le navigateur</p>
+                </div>
+                <Switch />
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Newsletter</p>
+                  <p className="text-sm text-gray-600">Conseils et actualités plantes</p>
+                </div>
+                <Switch defaultChecked />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lock className="h-5 w-5 text-red-500" />
+                Sécurité
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                    <Lock className="h-4 w-4 mr-2" />
+                    Changer le mot de passe
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <form onSubmit={handlePasswordChange}>
+                    <DialogHeader>
+                      <DialogTitle>Changer votre mot de passe</DialogTitle>
+                      <DialogDescription>
+                        Entrez votre ancien mot de passe et choisissez-en un nouveau.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
                       <div className="space-y-2">
-                        <Label htmlFor="first_name">Prénom</Label>
+                        <Label htmlFor="oldPassword">Ancien mot de passe</Label>
                         <Input
-                          id="first_name"
-                          value={editData.first_name || ""}
-                          onChange={(e) => handleInputChange("first_name", e.target.value)}
-                          placeholder="Votre prénom"
-                          className="bg-white/50"
+                          id="oldPassword"
+                          name="oldPassword"
+                          type="password"
+                          value={passwordData.oldPassword}
+                          onChange={handlePasswordInputChange}
+                          required
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="last_name">Nom</Label>
+                        <Label htmlFor="newPassword">Nouveau mot de passe</Label>
                         <Input
-                          id="last_name"
-                          value={editData.last_name || ""}
-                          onChange={(e) => handleInputChange("last_name", e.target.value)}
-                          placeholder="Votre nom"
-                          className="bg-white/50"
+                          id="newPassword"
+                          name="newPassword"
+                          type="password"
+                          value={passwordData.newPassword}
+                          onChange={handlePasswordInputChange}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</Label>
+                        <Input
+                          id="confirmPassword"
+                          name="confirmPassword"
+                          type="password"
+                          value={passwordData.confirmPassword}
+                          onChange={handlePasswordInputChange}
+                          required
                         />
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={editData.email}
-                        onChange={(e) => handleInputChange("email", e.target.value)}
-                        placeholder="votre.email@example.com"
-                        className="bg-white/50"
-                      />
-                    </div>
-                    <div className="flex space-x-3">
-                      <Button onClick={handleSave} className="flex-1 bg-gradient-to-r from-green-500 to-blue-500">
-                        <Save className="h-4 w-4 mr-2" />
-                        Sauvegarder
-                      </Button>
-                      <Button onClick={handleCancel} variant="outline" className="flex-1 bg-transparent">
-                        <X className="h-4 w-4 mr-2" />
+                    <DialogFooter>
+                      <Button type="button" variant="ghost" onClick={() => setIsPasswordDialogOpen(false)}>
                         Annuler
                       </Button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="space-y-6">
-                      <div className="p-4 bg-white/50 rounded-lg">
-                        <Label className="text-sm font-medium text-gray-500">Prénom</Label>
-                        <p className="mt-1 text-lg font-semibold">{userData.first_name || "Non renseigné"}</p>
-                      </div>
-                      <div className="p-4 bg-white/50 rounded-lg">
-                        <Label className="text-sm font-medium text-gray-500">Nom</Label>
-                        <p className="mt-1 text-lg font-semibold">{userData.last_name || "Non renseigné"}</p>
-                      </div>
-                    </div>
-                    <div className="space-y-6">
-                      <div className="p-4 bg-white/50 rounded-lg">
-                        <Label className="text-sm font-medium text-gray-500">Adresse email</Label>
-                        <p className="mt-1 text-lg font-semibold">{userData.email}</p>
-                      </div>
-                      <div className="p-4 bg-white/50 rounded-lg">
-                        <Label className="text-sm font-medium text-gray-500">Type d'utilisateur</Label>
-                        <p className="mt-1">
-                          <Badge className={getUserTypeColor(userData.user_type)}>
-                            {userData.user_type || "utilisateur"}
-                          </Badge>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Favoris */}
-          <TabsContent value="favorites" className="space-y-6">
-            <FavoritePlantsList />
-          </TabsContent>
-
-          {/* Statistiques */}
-          <TabsContent value="stats" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
-                <CardHeader>
-                  <CardTitle>Progression mensuelle</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {["Janvier", "Février", "Mars", "Avril"].map((month, index) => (
-                      <div key={month} className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>{month}</span>
-                          <span>{Math.floor(Math.random() * 50) + 10} plantes</span>
-                        </div>
-                        <Progress value={Math.floor(Math.random() * 80) + 20} className="h-2" />
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
-                <CardHeader>
-                  <CardTitle>Catégories préférées</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {[
-                      { name: "Plantes d'intérieur", percentage: 45 },
-                      { name: "Plantes tropicales", percentage: 30 },
-                      { name: "Succulentes", percentage: 15 },
-                      { name: "Plantes médicinales", percentage: 10 },
-                    ].map((category, index) => (
-                      <div key={index} className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>{category.name}</span>
-                          <span>{category.percentage}%</span>
-                        </div>
-                        <Progress value={category.percentage} className="h-2" />
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Succès */}
-          <TabsContent value="achievements" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {achievements.map((achievement, index) => (
-                <Card
-                  key={index}
-                  className={`border-0 shadow-xl ${
-                    achievement.unlocked ? "bg-gradient-to-br from-yellow-100 to-orange-100" : "bg-white/50 opacity-60"
-                  }`}
-                >
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-4">
-                      <div className="text-4xl">{achievement.icon}</div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg">{achievement.name}</h3>
-                        <p className="text-gray-600">{achievement.description}</p>
-                        {achievement.unlocked ? (
-                          <Badge className="mt-2 bg-green-100 text-green-800">Débloqué</Badge>
-                        ) : (
-                          <Badge className="mt-2" variant="secondary">
-                            Verrouillé
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          {/* Paramètres */}
-          <TabsContent value="settings" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Bell className="h-5 w-5 text-blue-500" />
-                    Notifications
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">Notifications email</p>
-                      <p className="text-sm text-gray-600">Recevoir des emails de notification</p>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                  <Separator />
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">Notifications push</p>
-                      <p className="text-sm text-gray-600">Notifications dans le navigateur</p>
-                    </div>
-                    <Switch />
-                  </div>
-                  <Separator />
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">Newsletter</p>
-                      <p className="text-sm text-gray-600">Conseils et actualités plantes</p>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Lock className="h-5 w-5 text-red-500" />
-                    Sécurité
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" className="w-full justify-start bg-transparent">
-                        <Lock className="h-4 w-4 mr-2" />
-                        Changer le mot de passe
+                      <Button type="submit" disabled={isPasswordChanging}>
+                        {isPasswordChanging ? "Sauvegarde..." : "Sauvegarder"}
                       </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <form onSubmit={handlePasswordChange}>
-                        <DialogHeader>
-                          <DialogTitle>Changer votre mot de passe</DialogTitle>
-                          <DialogDescription>
-                            Entrez votre ancien mot de passe et choisissez-en un nouveau.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="oldPassword">Ancien mot de passe</Label>
-                            <Input
-                              id="oldPassword"
-                              name="oldPassword"
-                              type="password"
-                              value={passwordData.oldPassword}
-                              onChange={handlePasswordInputChange}
-                              required
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="newPassword">Nouveau mot de passe</Label>
-                            <Input
-                              id="newPassword"
-                              name="newPassword"
-                              type="password"
-                              value={passwordData.newPassword}
-                              onChange={handlePasswordInputChange}
-                              required
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</Label>
-                            <Input
-                              id="confirmPassword"
-                              name="confirmPassword"
-                              type="password"
-                              value={passwordData.confirmPassword}
-                              onChange={handlePasswordInputChange}
-                              required
-                            />
-                          </div>
-                        </div>
-                        <DialogFooter>
-                          <Button type="button" variant="ghost" onClick={() => setIsPasswordDialogOpen(false)}>
-                            Annuler
-                          </Button>
-                          <Button type="submit" disabled={isPasswordChanging}>
-                            {isPasswordChanging ? "Sauvegarde..." : "Sauvegarder"}
-                          </Button>
-                        </DialogFooter>
-                      </form>
-                    </DialogContent>
-                  </Dialog>
-                  <Button variant="outline" className="w-full justify-start bg-transparent">
-                    <Shield className="h-4 w-4 mr-2" />
-                    Authentification à deux facteurs
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-red-600 hover:text-red-700 bg-transparent"
-                  >
-                    <X className="h-4 w-4 mr-2" />
-                    Supprimer le compte
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+              <Button variant="outline" className="w-full justify-start bg-transparent">
+                <Shield className="h-4 w-4 mr-2" />
+                Authentification à deux facteurs
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )
