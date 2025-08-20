@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -57,6 +58,14 @@ export default function PlantsPage() {
   const [plants, setPlants] = useState([])
   const [favorites, setFavorites] = useState([])
   const [token, setToken] = useState(null)
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const category = searchParams.get("category")
+    if (category && filterOptions.types.includes(category)) {
+      setFilters((prevFilters) => ({ ...prevFilters, type: category }))
+    }
+  }, [searchParams])
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token")

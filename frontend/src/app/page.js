@@ -65,13 +65,13 @@ export default function HomePage() {
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 justify-items-center sm:justify-items-start">
             {[
-              { name: "Plantes d’intérieur", image: "/plants/pinter.jpg" },
-              { name: "Plantes médicinales", image: "/plants/pmedic.jpg" },
-              { name: "Plantes grasses et cactus", image: "/plants/pgrasse.jpg" },
-              { name: "Plantes d’extérieur", image: "/plants/pext.jpg" },
-              { name: "Plantes décoratives", image: "/plants/pdeco.jpg" },
+              { name: "Plantes d’intérieur", image: "/plants/pinter.jpg", key: "Intérieur" },
+              { name: "Plantes médicinales", image: "/plants/pmedic.jpg", key: "Médicinale" },
+              { name: "Plantes grasses et cactus", image: "/plants/pgrasse.jpg", key: "Cactus" },
+              { name: "Plantes d’extérieur", image: "/plants/pext.jpg", key: "Extérieur" },
+              { name: "Plantes décoratives", image: "/plants/pdeco.jpg", key: "Décoratives" },
             ].map((category, index) => (
-              <Link href={`/categories/${category.name.toLowerCase().replace(/ /g, "-")}`} key={index}>
+              <Link href={`/plants?category=${category.key}`} key={index}>
                 <Card className="flex flex-col items-center text-center p-4 bg-green-50 border-green-200 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer h-full w-full max-w-[250px]">
                   <Image
                     src={category.image || "/placeholder.svg"}

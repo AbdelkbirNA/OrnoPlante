@@ -54,7 +54,7 @@ export default function UserProfile() {
   const [selectedFile, setSelectedFile] = useState(null)
   const [profilePicturePreviewUrl, setProfilePicturePreviewUrl] = useState(null)
   const [token, setToken] = useState(null)
-  const [activeTab, setActiveTab] = useState("overview")
+  
   const [passwordData, setPasswordData] = useState({
     oldPassword: "",
     newPassword: "",
@@ -285,19 +285,9 @@ export default function UserProfile() {
     nextLevelExp: 1000,
   }
 
-  const recentActivity = [
-    { type: "plant", action: "Ajouté une nouvelle plante", item: "Monstera Deliciosa", time: "Il y a 2h" },
-    { type: "favorite", action: "Ajouté aux favoris", item: "Ficus Benjamina", time: "Il y a 1 jour" },
-    { type: "question", action: "Posé une question", item: "Comment arroser ma lavande ?", time: "Il y a 2 jours" },
-    { type: "achievement", action: "Débloquer un succès", item: "Expert en plantes", time: "Il y a 3 jours" },
-  ]
+  
 
-  const achievements = [
-    { name: "Premier pas", description: "Première connexion", icon: "🌱", unlocked: true },
-    { name: "Collectionneur", description: "10 plantes ajoutées", icon: "🌿", unlocked: true },
-    { name: "Expert", description: "50 questions posées", icon: "🧠", unlocked: false },
-    { name: "Influenceur", description: "100 favoris", icon: "⭐", unlocked: false },
-  ]
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
@@ -377,7 +367,7 @@ export default function UserProfile() {
       {/* Contenu principal */}
       <div className="max-w-6xl mx-auto px-6 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-6 bg-white/50 backdrop-blur-sm">
+          <TabsList className="grid w-full grid-cols-5 bg-white/50 backdrop-blur-sm">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <Activity className="h-4 w-4" />
               Vue d'ensemble
@@ -394,10 +384,6 @@ export default function UserProfile() {
               <TrendingUp className="h-4 w-4" />
               Statistiques
             </TabsTrigger>
-            <TabsTrigger value="achievements" className="flex items-center gap-2">
-              <Award className="h-4 w-4" />
-              Succès
-            </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
               Paramètres
@@ -406,19 +392,7 @@ export default function UserProfile() {
 
           {/* Vue d'ensemble */}
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-green-100">Mes plantes</p>
-                      <p className="text-3xl font-bold">{staticStats.plants}</p>
-                    </div>
-                    <Leaf className="h-8 w-8 text-green-200" />
-                  </div>
-                </CardContent>
-              </Card>
-
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card className="bg-gradient-to-br from-red-500 to-pink-600 text-white border-0">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
@@ -452,56 +426,6 @@ export default function UserProfile() {
                     </div>
                     <Eye className="h-8 w-8 text-purple-200" />
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Niveau et expérience */}
-              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Star className="h-5 w-5 text-yellow-500" />
-                    Niveau et Expérience
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold">Niveau {staticStats.level}</span>
-                    <Badge className="bg-yellow-100 text-yellow-800">
-                      {staticStats.experience}/{staticStats.nextLevelExp} XP
-                    </Badge>
-                  </div>
-                  <Progress value={(staticStats.experience / staticStats.nextLevelExp) * 100} className="h-3" />
-                  <p className="text-sm text-gray-600">
-                    Plus que {staticStats.nextLevelExp - staticStats.experience} XP pour le niveau suivant !
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* Activité récente */}
-              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Activity className="h-5 w-5 text-blue-500" />
-                    Activité récente
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ScrollArea className="h-48">
-                    <div className="space-y-4">
-                      {recentActivity.map((activity, index) => (
-                        <div key={index} className="flex items-start gap-3">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                          <div className="flex-1">
-                            <p className="text-sm font-medium">{activity.action}</p>
-                            <p className="text-sm text-gray-600">{activity.item}</p>
-                            <p className="text-xs text-gray-500">{activity.time}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
                 </CardContent>
               </Card>
             </div>
@@ -659,36 +583,7 @@ export default function UserProfile() {
             </div>
           </TabsContent>
 
-          {/* Succès */}
-          <TabsContent value="achievements" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {achievements.map((achievement, index) => (
-                <Card
-                  key={index}
-                  className={`border-0 shadow-xl ${
-                    achievement.unlocked ? "bg-gradient-to-br from-yellow-100 to-orange-100" : "bg-white/50 opacity-60"
-                  }`}
-                >
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-4">
-                      <div className="text-4xl">{achievement.icon}</div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg">{achievement.name}</h3>
-                        <p className="text-gray-600">{achievement.description}</p>
-                        {achievement.unlocked ? (
-                          <Badge className="mt-2 bg-green-100 text-green-800">Débloqué</Badge>
-                        ) : (
-                          <Badge className="mt-2" variant="secondary">
-                            Verrouillé
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
+          
 
           {/* Paramètres */}
           <TabsContent value="settings" className="space-y-6">
@@ -800,13 +695,7 @@ export default function UserProfile() {
                     <Shield className="h-4 w-4 mr-2" />
                     Authentification à deux facteurs
                   </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-red-600 hover:text-red-700 bg-transparent"
-                  >
-                    <X className="h-4 w-4 mr-2" />
-                    Supprimer le compte
-                  </Button>
+                  
                 </CardContent>
               </Card>
             </div>
