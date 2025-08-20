@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
@@ -54,7 +54,7 @@ const filterOptions = {
   ],
 }
 
-export default function PlantsPage() {
+function PlantsPageContent() {
   const [plants, setPlants] = useState([])
   const [favorites, setFavorites] = useState([])
   const [token, setToken] = useState(null)
@@ -428,6 +428,14 @@ export default function PlantsPage() {
       
 
     </div>
+  )
+}
+
+export default function PlantsPage() {
+  return (
+    <Suspense fallback={<div>Chargement...</div>}>
+      <PlantsPageContent />
+    </Suspense>
   )
 }
 
