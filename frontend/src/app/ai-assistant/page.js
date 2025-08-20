@@ -232,7 +232,7 @@ console.log("abdo")
              const aiMessage = {
          id: Date.now() + 1,
          type: "ai",
-         content: data.response || "Désolé, OrnoAI n'a pas pu traiter votre demande.",
+         content: data.response || data.text || "Désolé, OrnoAI n'a pas pu traiter votre demande.",
          timestamp: new Date(),
        }
 
