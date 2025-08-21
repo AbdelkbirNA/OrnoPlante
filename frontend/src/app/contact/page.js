@@ -180,6 +180,7 @@ const testimonials = [
 ]
 
 export default function ContactPage() {
+  console.log('Rendering ContactPage');
   const [formData, setFormData] = useState({
     name: "",
     email: "",
