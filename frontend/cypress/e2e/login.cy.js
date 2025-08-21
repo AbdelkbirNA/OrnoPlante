@@ -47,32 +47,22 @@ describe('Login Flow', () => {
     cy.contains('Identifiants incorrects').should('be.visible');
   });
 
-  it('should log in successfully with mocked credentials and redirect', () => {
-    // Mock the API call for login
-    cy.intercept('POST', '/api/login', {
-      statusCode: 200,
-      body: {
-        token: 'fake-jwt-token',
-        user: {
-          id: '1',
-          name: 'Test User',
-          email: 'testuser@example.com',
-        },
-      },
-    }).as('loginRequest');
+  it('should log in successfully with a real user and redirect', () => {
+    // IMPORTANT: Remplacez ces identifiants par ceux d'un utilisateur existant dans votre base de données de test locale.
+    const userEmail = 'test@example.com';
+    const userPassword = 'password123';
 
-    // Type any credentials, they will be mocked
-    cy.get('input[placeholder="exemple@domaine.com"]').type('testuser@example.com');
-    cy.get('input[type="password"]').type('password123');
+    // Remplir les identifiants
+    cy.get('input[placeholder="exemple@domaine.com"]').type(userEmail);
+    cy.get('input[type="password"]').type(userPassword);
 
-    // Submit the form
+    // Soumettre le formulaire
     cy.get('button[type="submit"]').click();
 
-    // Wait for the mocked request to complete
-    cy.wait('@loginRequest');
-
-    // The user should be redirected to the profile page
+    // L'utilisateur doit être redirigé vers la page de profil
     cy.url().should('include', '/profil');
+
+    // La page de profil doit contenir les informations personnelles de l'utilisateur
     cy.contains('Informations personnelles').should('be.visible');
   });
 });
