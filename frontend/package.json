@@ -62,5 +62,13 @@
     "jest-environment-jsdom": "^30.0.5",
     "tailwindcss": "^4.1.11",
     "tw-animate-css": "^1.3.5"
+  },"jest": {
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": ["babel-jest", { "configFile": "./babel.jest.config.js" }]
+    },
+    "testEnvironment": "jsdom",
+    "moduleNameMapper": {
+      "\\.(css|less|scss|sass)$": "identity-obj-proxy"
+    }
   }
 }
