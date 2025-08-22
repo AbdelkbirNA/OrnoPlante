@@ -56,7 +56,10 @@ jobs:
             echo "Waiting for MySQL..."
             sleep 2
           done
-
+      - name: Prisma DB Push
+        run: npx prisma db push
+        working-directory: backend
+        
       # Lancer backend en arrière-plan
       - name: Start backend
         run: npm run start &
