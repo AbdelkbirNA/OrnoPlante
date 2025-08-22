@@ -17,7 +17,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: ornoplante
           MYSQL_USER: user
-          MYSQL_PASSWORD: password
+          MYSQL_PASSWORD: root
         ports:
           - 3306:3306
         options: >-
@@ -31,7 +31,7 @@ jobs:
       DATABASE_URL: mysql://root:root@localhost:3306/ornoplante
       MYSQLHOST: localhost
       MYSQLUSER: root
-      MYSQLPASSWORD: password
+      MYSQLPASSWORD: root
       MYSQLDATABASE: ornoplante
       MYSQLPORT: 3306
 
