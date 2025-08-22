@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "test:e2e": "cypress run"
+    "test:e2e": "cypress run --browser chrome --headless"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.14",
