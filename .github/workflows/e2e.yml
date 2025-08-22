@@ -1,10 +1,9 @@
 name: E2E Tests
 
-# Quand le workflow se déclenche
 on:
   pull_request:
     branches: [main]   # seulement sur les PR vers main
-  workflow_dispatch:    # optionnel : déclenchement manuel
+  workflow_dispatch:    # déclenchement manuel possible
 
 jobs:
   e2e:
@@ -17,6 +16,8 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: ornoplante
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
         ports:
           - 3306:3306
         options: >-
@@ -25,8 +26,12 @@ jobs:
           --health-timeout=5s
           --health-retries=3
 
+    # Définir DATABASE_URL pour tout le job depuis les secrets
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
     steps:
-      # Récupération du code
+      # Récupérer le code
       - uses: actions/checkout@v3
 
       # Installer Node.js
@@ -40,18 +45,17 @@ jobs:
         run: npm install
         working-directory: backend
 
-      # Lancer backend (en background si nécessaire)
+      # Lancer backend en arrière-plan
       - name: Start backend
         run: npm run start &
         working-directory: backend
 
-      # Installer dépendances frontend (optionnel si E2E nécessite)
+      # Installer dépendances frontend
       - name: Install frontend dependencies
         run: npm install
         working-directory: frontend
-      
 
-      # Lancer tests E2E
+      # Lancer tests E2E avec Cypress
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v5
         with:
