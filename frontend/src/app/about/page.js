@@ -85,7 +85,7 @@ export default function AboutPage() {
                     className="inline-flex h-12 items-center justify-center rounded-2xl border-2 border-green-600 bg-white/80 backdrop-blur-sm px-6 text-base font-semibold text-green-700 shadow-lg transition-all duration-300 hover:bg-green-50 hover:shadow-xl"
                   >
                     <Calendar className="mr-2 h-5 w-5" />
-                    Notre histoire
+                    Notre histoire ok
                   </Button>
                 </Link>
               </div>
