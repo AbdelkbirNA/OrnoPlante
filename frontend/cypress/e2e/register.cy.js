@@ -46,7 +46,7 @@ cy.get('input[name="confirm-password"]').type(user.password);
     cy.get('input[name="last_name"]').type('User');
     cy.get('input[name="email"]').type('test.passwordmismatch@example.com');
     cy.get('input[name="password"]').type('password123');
-    cy.get('input[name="confirm-password"]').type('password123');
+    cy.get('input[name="confirm-password"]').type('password1234');
     // Submit the form
     cy.get('button[type="submit"]').click();
 
