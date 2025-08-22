@@ -26,7 +26,7 @@ describe('Login Flow', () => {
 
   it('should show an error message with invalid credentials (mocked)', () => {
     // Mock the API call to return an error
-    cy.intercept('POST', '/api/login', {
+    cy.intercept('POST', 'http://localhost:8080/api/login', {
       statusCode: 401,
       body: {
         message: 'Identifiants incorrects',
@@ -49,8 +49,8 @@ describe('Login Flow', () => {
 
   it('should log in successfully with a real user and redirect', () => {
     // IMPORTANT: Remplacez ces identifiants par ceux d'un utilisateur existant dans votre base de données de test locale.
-    const userEmail = 'test@example.com';
-    const userPassword = 'password123';
+    const userEmail = 'root@root.com';
+    const userPassword = 'root123';
 
     // Remplir les identifiants
     cy.get('input[placeholder="exemple@domaine.com"]').type(userEmail);
