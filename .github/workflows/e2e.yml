@@ -29,6 +29,11 @@ jobs:
     # Définir DATABASE_URL pour tout le job depuis les secrets
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      MYSQLHOST: localhost
+      MYSQLUSER: user
+      MYSQLPASSWORD: password
+      MYSQLDATABASE: Ornoplante
+      MYSQLPORT: 3306
 
     steps:
       # Récupérer le code
@@ -54,10 +59,15 @@ jobs:
       - name: Install frontend dependencies
         run: npm install
         working-directory: frontend
-
+      
+      - name: Start frontend
+        run: npm run dev &
+        working-directory: frontend
       # Lancer tests E2E avec Cypress
-      - name: Run Cypress E2E tests
+      - name: Run Cypress tests
         uses: cypress-io/github-action@v5
         with:
+          runTests: true
           browser: chrome
-          headless: true
+          headed: false 
+          working-directory: frontend  # <- ici aussi, pour que Cypress se lance dans le bon dossier
