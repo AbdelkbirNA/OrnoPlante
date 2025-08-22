@@ -34,6 +34,8 @@ jobs:
       MYSQLPASSWORD: root
       MYSQLDATABASE: ornoplante
       MYSQLPORT: 3306
+      Admin_PW: root123
+      JWT_SECRET: U8fLp9@2xQz7vWm*JdRkHs!bGtX
 
     steps:
       # Récupérer le code
@@ -59,7 +61,7 @@ jobs:
       - name: Prisma DB Push
         run: npx prisma db push
         working-directory: backend
-        
+
       # Lancer backend en arrière-plan
       - name: Start backend
         run: npm run start &
