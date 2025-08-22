@@ -49,8 +49,12 @@ jobs:
       - name: Install frontend dependencies
         run: npm install
         working-directory: frontend
+      - name: Set TERM
+        run: echo "xterm-256color" >> $GITHUB_ENV
 
       # Lancer tests E2E
-      - name: Run E2E tests
-        run: npm run test:e2e
-        working-directory: frontend
+      - name: Run Cypress E2E tests
+        uses: cypress-io/github-action@v5
+        with:
+          browser: chrome
+          headless: true
