@@ -68,7 +68,7 @@ describe('Plant Controller', () => {
         .attach('image', 'tests/test_image.jpg'); // Assuming you have a dummy image for testing
 
       expect(res.statusCode).toEqual(201);
-      expect(res.body).toHaveProperty('message', 'Plante ajoutée av succès.');
+      expect(res.body).toHaveProperty('message', 'Plante ajoutée avec succès.');
       expect(prisma.plant.create).toHaveBeenCalled();
     });
 
