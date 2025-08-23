@@ -23,7 +23,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build -t abdelkbirna/ornoplante-backend:latest f ./backend/Dockerfile.prod ./backend
+        run: docker build -t abdelkbirna/ornoplante-backend:latest -f ./backend/Dockerfile.prod ./backend
 
       - name: Push Docker image
         run: docker push abdelkbirna/ornoplante-backend:latest
