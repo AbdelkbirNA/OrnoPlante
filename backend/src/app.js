@@ -43,5 +43,5 @@ app.use("/api/", planteRoutes);
 app.use("/api/plantnet", plantnetRoutes);
 app.use('/api', contactRoutes)
 app.use("/api/favorites", favoriteRoutes);
-
+ 
 module.exports = app;
