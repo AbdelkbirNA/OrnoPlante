@@ -3,7 +3,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --production
 COPY . .
-RUN cp .env.production .env
 RUN npx prisma generate
 
 EXPOSE 8080
