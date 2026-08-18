@@ -2,8 +2,6 @@
 
 **OrnoPlante is a web application to help users identify, manage, and learn about ornamental plants. Powered by a machine learning model, it provides plant identification and a platform for users to track their plant collections.**
 
- <!-- You should add a screenshot or GIF here! -->
-
 ## ✨ Features
 
 *   **Plant Identification:** Upload an image to get plant identification suggestions.
@@ -60,5 +58,5 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 This project was created by Abdelkbir Nainiaa.
 
-*   **Portfolio:** [abdelkbirnainiaa.vercel.app](https://abdelkbirnainiaa.vercel.app/)
+*   **Portfolio:** [abdelkbirnainiaa.me](https://www.abdelkbirnainiaa.me)
 *   **GitHub:** [AbdelkbirNA](https://github.com/AbdelkbirNA)
